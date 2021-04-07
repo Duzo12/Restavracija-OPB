@@ -1,8 +1,8 @@
 # Restavracija-OPB
 Spletna aplikacija pri premetu OPB
 
-![Diagram-readme](https://user-images.githubusercontent.com/39483369/113877531-14e18500-97b9-11eb-90ed-e28d845aeb94.png)
 
+![Diagram-končna](https://user-images.githubusercontent.com/39483369/113884945-b4a21180-97bf-11eb-9219-b3dde5e6e1f8.png)
 
 # OPIS APLIKACIJE
 Idejo za našo aplikacijo bomo oblikovali na podlagi spletnega naročanja hrane. Aplikacija bo za začetek posameznika prosila za njegove osebne podatke (ime, priimek in naslov), ter ga nato shranila v bazo podatkov pod zaporedno številko ID-ja. Sledilo bo izbira naročila. Naročnik bo imel na izbiro različne jedi. Za vsako izbiro bo moral navediti tudi količino le-te. Aplikacija bo nato sama preverila ali je dana jed na zalogi, in v tem primeru naročilo potrdilo, v nasprotnem pa zavrnila. Naročilo bo predano kuharju in kuhar bo hrano predal dostavljalcu. Dostavljalec pa bo hrano dostavil strankam na dani naslov. V apikaciji bodo za vodjo restavracije na voljo tudi podatki o zaposlenih ter podatki o vozilih s katerimi se bo dostava izvajala. 
