@@ -31,10 +31,10 @@ def index():
     cur.execute("SELECT * FROM narocniki ORDER BY priimek, ime")
     return template('narocniki.html', osebe=cur)
     
-@get('/transakcije/<x:int>/')
-def transakcije(x):
-    cur.execute("SELECT * FROM transakcija WHERE znesek > %s ORDER BY znesek, id", [x])
-    return template('transakcije.html', x=x, transakcije=cur)
+#@get('/transakcije/<x:int>/')
+#def transakcije(x):
+    #cur.execute("SELECT * FROM transakcija WHERE znesek > %s ORDER BY znesek, id", [x])
+    #return template('transakcije.html', x=x, transakcije=cur)
 
 @get('/dodaj_transakcijo')
 def dodaj_transakcijo():
