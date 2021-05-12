@@ -1,0 +1,18 @@
+%rebase('osnova.html', naslov='Naročniki hrane')
+
+  <table cellpadding="0" cellspacing="0" border="1">
+  <tr>
+     <th>Id</th>
+     <th>Ime</th>
+     <th>Priimek</th>
+     <th>Naslov</th>
+  </tr>
+  %for (id,ime,priimek,naslov) in osebe:
+    <tr>
+       <td>{{id}}</td>
+       <td>{{ime}}</td>
+       <td>{{priimek}}</td>
+       <td>{{naslov}}</td>
+    </tr>
+  %end
+  </table>

@@ -1,40 +1,37 @@
-# Restavracija-OPB
-Spletna aplikacija pri premetu OPB
+# Primer spletne aplikacije z `bottle.py`
+
+* [![bottle.py](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jaanos/OPB-bottle/master?urlpath=proxy/8080/) Aplikacija `bottle.py`
+* [![Jupyter](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jaanos/OPB-bottle/master) Jupyter
 
 
-![Diagram-končna](https://user-images.githubusercontent.com/39483369/113884945-b4a21180-97bf-11eb-9219-b3dde5e6e1f8.png)
+Ta repozitorij vsebuje minimalen primer spletne aplikacije z ogrodjem [`bottle.py`](https://bottlepy.org/docs/dev/) in povezavo na podatkovno bazo [PostgreSQL](https://www.postgresql.org/) za potrebe predmeta [Osnove podatkovnih baz](https://github.com/jaanos/OPB).
 
-# OPIS APLIKACIJE
-Idejo za našo aplikacijo bomo oblikovali na podlagi spletnega naročanja hrane. Aplikacija bo za začetek posameznika prosila za njegove osebne podatke (ime, priimek in naslov), ter ga nato shranila v bazo podatkov pod zaporedno številko ID-ja. Sledilo bo izbira naročila. Naročnik bo imel na izbiro različne jedi. Za vsako izbiro bo moral navediti tudi količino le-te. Aplikacija bo nato sama preverila ali je dana jed na zalogi, in v tem primeru naročilo potrdilo, v nasprotnem pa zavrnila. Naročilo bo predano kuharju in kuhar bo hrano predal dostavljalcu. Dostavljalec pa bo hrano dostavil strankam na dani naslov. V apikaciji bodo za vodjo restavracije na voljo tudi podatki o zaposlenih ter podatki o vozilih s katerimi se bo dostava izvajala. 
 
-Spodaj je podano nekaj poljubnih tabel
+## ER diagram
 
-## Zaposleni
-|*ID*|*Ime*|*Priimek*|*Telefon*|*Plača*|*Rojstvo*|
-|----|-----|---------|---------|--------|--------|
-|1|Marija|Novak|031234567|1200€|21.11.1990|
-|2|Klemen|Koren|529654712|1520€|28.04.1966|
-|3|Tine|Robnjak|041857007|5000€|02.01.1988|
+![ER diagram](banka.png)
 
-## Stranka
-|*ID*|*Ime*|*Priimek*|*Naslov*|
-|----|-----|---------|---------|
-|1|Tone|Pintarič|Zavrti 22A|
-|2|Ema|Klinec|Testenova 56|
-|3|Tina|Soseda|Janševa 12|
+## Aplikacija
 
-## Prevozno sredstvo
-|*ID*|*Tip*|*Znamka*|
-|----|-----|---------|
-|1|avto|Renault|
-|2|avto|Fiat|
-|3|kolo|KTM|
-|4|motor|Tomos|
+Aplikacijo zaženemo tako, da poženemo program [`primer.py`](primer.py), npr.
+```bash
+python primer.py
+```
+Za delovanje je potrebno še sledeče:
+* [`auth_public.py`](auth_public.py) - podatki za prijavo na bazo
+* [`bottle.py`](bottle.py) - knjižnica za spletni strežnik
+* [`bottleext.py`](bottleext.py) - dopolnitve knjižnice `bottle.py` za lažje delo
+* [`static/`](static/) - mapa s statičnimi datotekami
+* [`views/`](views/) - mapa s predlogami
 
-## Ponudba
-|*ID*|*Vrsta*|
-|----|-----|
-|1|hamburger|
-|2|pizza|
-|3|hot-dog|
-|4|sladoled|
+
+## Binder
+
+Aplikacijo je mogoče poganjati tudi na spletu z orodjem [Binder](https://mybinder.org/). V ta namen so v mapi [`binder/`](binder/) še sledeče datoteke:
+* [`requirements.txt`](binder/requirements.txt) - seznam potrebnih Pythonovih paketov za namestitev s [`pip`](https://pypi.org/project/pip/)
+* [`postBuild`](binder/postBuild) - skripta, ki se požene po namestitvi paketov in poskrbi za nastavitev posrednika za spletni strežnik
+* [`start`](binder/start) - skripta za zagon aplikacije (spremenljivka `BOTTLE_RUNTIME` poda ime glavnega programa)
+
+Zaradi omejitev javne storitve [Binder](https://mybinder.org/) se povezava z bazo vzpostavi na vratih 443 (namesto običajnih 5432), za kar je bila potrebna posebna nastavitev strežnika.
+
+Zgornje skripte je možno prilagoditi tudi za druga ogrodja, kot npr. [Flask](https://palletsprojects.com/p/flask/) ali [Django](https://www.djangoproject.com/).
