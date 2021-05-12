@@ -27,7 +27,7 @@ def pobrisi_tabelo_zaposleni():
     conn.commit()
 
 def uvozi_podatke_zaposleni():
-    cur.execute("""
+    cur.execute( """
         INSERT INTO zaposleni (id, ime, priimek, telefon, placa, rojstvo) VALUES (1, 'Nejc', 'Duscak', 0321, 41566, 1852)
     """)
     conn.commit()

@@ -29,32 +29,27 @@ def static(filename):
 @get('/')
 def index():
     cur.execute("SELECT * FROM narocniki ORDER BY priimek, ime")
-    return template('narocniki.html', osebe=cur)
-    
-#@get('/transakcije/<x:int>/')
-#def transakcije(x):
-    #cur.execute("SELECT * FROM transakcija WHERE znesek > %s ORDER BY znesek, id", [x])
-    #return template('transakcije.html', x=x, transakcije=cur)
+    return template('narocniki.html', narocnik=cur)
 
-@get('/dodaj_transakcijo')
-def dodaj_transakcijo():
-     return template('dodaj_transakcijo.html', znesek='', racun='', opis='', napaka=None)
+@get('/registracija')
+def registracija():
+    return template('registracija.html', ime='', priimek='', naslov='', napaka = None)
 
-@post('/dodaj_transakcijo')
-def dodaj_transakcijo_post():
-     znesek = request.forms.znesek
-     racun = request.forms.racun
-     opis = request.forms.opis
+@post('/registracija')
+def registracija_post():
+     ime = request.forms.ime
+     priimek = request.forms.priimek
+     naslov = request.forms.naslov
      try:
-         cur.execute("INSERT INTO transakcija (znesek, racun, opis) VALUES (%s, %s, %s)",
-                     (znesek, racun, opis))
+         cur.execute("INSERT INTO narocniki (ime, priimek, naslov) VALUES (%s, %s, %s)",
+                     (ime, priimek, naslov))
          conn.commit()
      except Exception as ex:
          conn.rollback()
-         return template('dodaj_transakcijo.html', znesek=znesek, racun=racun, opis=opis,
+         return template('registracija.html', ime=ime, priimek=priimek, naslov=naslov,
                          napaka='Zgodila se je napaka: %s' % ex)
      redirect(url('index'))
-
+    
 ######################################################################
 # Glavni program
 
