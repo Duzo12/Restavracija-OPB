@@ -8,7 +8,7 @@ from bottleext import get, post, run, request, template, redirect, static_file, 
 # uvozimo ustrezne podatke za povezavo
 import auth_public as auth
 
-# uvozimo psycopg2
+# uvozimo psycopg2 neki sprem
 import psycopg2, psycopg2.extensions, psycopg2.extras
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODE) # se znebimo problemov s šumniki
 
