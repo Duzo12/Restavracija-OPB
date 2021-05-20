@@ -8,17 +8,18 @@ psycopg2.extensions.register_type(psycopg2.extensions.UNICODE) # se znebimo prob
 
 import csv
 
+testna_sprem = 7
 def ustvari_tabelo_zaposleni():
     cur.execute("""
         CREATE TABLE zaposleni (
             id SERIAL PRIMARY KEY,
             ime TEXT NOT NULL,
             priimek TEXT NOT NULL,
-            telefon INTEGER NOT NULL,
-            placa NUMERIC NOT NULL,
-            rojstvo INTEGER NOT NULL
+            telefon TEXT NOT NULL,
+            placa TEXT NOT NULL,
+            rojstvo DATE NOT NULL
         );
-    """)
+    """) #morda bi pri telefon dodal unique, DATE se vstavlja v obliki 'YYYY-MM-DD'
     conn.commit()
 
 def pobrisi_tabelo_zaposleni():
@@ -29,7 +30,9 @@ def pobrisi_tabelo_zaposleni():
 
 def uvozi_podatke_zaposleni():
     cur.execute( """
-        INSERT INTO zaposleni (id, ime, priimek, telefon, placa, rojstvo) VALUES (1, 'Nejc', 'Duscak', 0321, 41566, 1852)
+        INSERT INTO zaposleni (ime, priimek, telefon, placa, rojstvo) VALUES ('Nejc', 'Duscak', '070 256 331', '1500 €', '1998-01-07');
+        INSERT INTO zaposleni (ime, priimek, telefon, placa, rojstvo) VALUES ('Maks', 'Perbil', '040 456 133', '1200 €', '1998-02-12');
+        INSERT INTO zaposleni (ime, priimek, telefon, placa, rojstvo) VALUES ('Jan', 'Črne', '031 262 381', '1200 €', '1997-04-30');
     """)
     conn.commit()
 
@@ -39,7 +42,9 @@ def ustvari_tabelo_narocniki():
             id SERIAL PRIMARY KEY,
             ime TEXT NOT NULL,
             priimek TEXT NOT NULL,
-            naslov TEXT NOT NULL
+            kraj TEXT NOT NULL,
+            naslov TEXT NOT NULL,
+            telefon TEXT UNIQUE NOT NULL
         );
     """)
     conn.commit()
@@ -51,11 +56,12 @@ def pobrisi_tabelo_narocniki():
     conn.commit()
 
 def uvozi_podatke_narocniki():
-    cur.execute("""
-        INSERT INTO narocniki (id, ime, priimek, naslov) VALUES (1, 'Nejc', 'Duscak', 'Zavrti 22A')
+    cur.execute( """
+        INSERT INTO narocniki (ime, priimek, kraj, naslov, telefon) VALUES ('Nejc', 'Duscak', 'Ljubljana', 'Ulica 1', '070 256 331');
+        INSERT INTO narocniki (ime, priimek, kraj, naslov, telefon) VALUES ('Jan', 'Črne', 'Litija', 'Ulica 2', '031 262 381');
+        INSERT INTO narocniki (ime, priimek, kraj, naslov, telefon) VALUES ('Maks', 'Perbil', 'Vrhnika', 'Ulica 3', '040 456 133');
     """)
     conn.commit()
-
 
 # def uvozi_podatke():
 #     with open("podatki/obcine.csv", encoding="UTF-8") as f:
