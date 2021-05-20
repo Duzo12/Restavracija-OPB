@@ -1,4 +1,4 @@
-#SAMO DA VIDIM KAKO DELUJE COMMIT
+#SAMO DA VIDIM KAKO DELUJE COMMIT 2
 #!/usr/bin/python
 # -*- encoding: utf-8 -*-
 
