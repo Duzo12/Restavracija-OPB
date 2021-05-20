@@ -1,4 +1,4 @@
-#NEK DRUG COMMIT
+#NEK DRUG COMMIT 2
 # uvozimo ustrezne podatke za povezavo
 from . import auth
 
