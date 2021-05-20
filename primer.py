@@ -1,4 +1,3 @@
-#SAMO DA VIDIM KAKO DELUJE COMMIT 3
 #!/usr/bin/python
 # -*- encoding: utf-8 -*-
 
