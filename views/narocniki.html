@@ -6,13 +6,17 @@
      <th>Ime</th>
      <th>Priimek</th>
      <th>Naslov</th>
+     <th>Kraj</th>
+     <th>Telefon</th>
   </tr>
-  %for (id,ime,priimek,naslov) in narocnik:
+  %for (id,ime,priimek,naslov,kraj,telefon) in narocnik:
     <tr>
        <td>{{id}}</td>
        <td>{{ime}}</td>
        <td>{{priimek}}</td>
        <td>{{naslov}}</td>
+       <td>{{kraj}}</td>
+       <td>{{telefon}}</td>
     </tr>
   %end
   </table>
