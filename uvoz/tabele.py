@@ -63,6 +63,37 @@ def uvozi_podatke_narocniki():
     """)
     conn.commit()
 
+def ustvari_tabelo_ponudba():
+    cur.execute("""
+        CREATE TABLE ponudba (
+            id SERIAL PRIMARY KEY,
+            vrsta TEXT NOT NULL,
+            cena TEXT NOT NULL,
+            zaloga TEXT NOT NULL
+        );
+    """)
+    conn.commit()
+    
+def pobrisi_tabelo_ponudba():
+    cur.execute("""
+        DROP TABLE ponudba;
+    """)
+    conn.commit()
+
+def uvozi_podatke_ponudba():
+    cur.execute("""
+        INSERT INTO ponudba (vrsta, cena, zaloga) VALUES ('Hamburger', '6€', '4');
+        INSERT INTO ponudba (vrsta, cena, zaloga) VALUES ('Pizza', '8€', '4');
+        INSERT INTO ponudba (vrsta, cena, zaloga) VALUES ('Čevapčiči', '7€', '4');
+        INSERT INTO ponudba (vrsta, cena, zaloga) VALUES ('Pommes Frittes', '2€', '4');
+        INSERT INTO ponudba (vrsta, cena, zaloga) VALUES ('Kebab', '3€', '4');
+        INSERT INTO ponudba (vrsta, cena, zaloga) VALUES ('Burek', '2€', '4');
+        INSERT INTO ponudba (vrsta, cena, zaloga) VALUES ('Taquitosi', '4€', '4');
+        INSERT INTO ponudba (vrsta, cena, zaloga) VALUES ('pohan piščanec', '7€', '4');
+        INSERT INTO ponudba (vrsta, cena, zaloga) VALUES ('Sladoled', '3€', '4');
+    """)
+    conn.commit()
+
 # def uvozi_podatke():
 #     with open("podatki/obcine.csv", encoding="UTF-8") as f:
 #         rd = csv.reader(f)

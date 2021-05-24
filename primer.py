@@ -28,8 +28,8 @@ def static(filename):
 
 @get('/')
 def index():
-    cur.execute("SELECT * FROM narocniki ORDER BY priimek, ime")
-    return template('narocniki.html', narocnik=cur)
+    cur.execute("SELECT * FROM ponudba")
+    return template('ponudba.html', ponudba=cur)
 
 @get('/registracija')
 def registracija():
