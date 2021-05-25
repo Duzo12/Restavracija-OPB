@@ -33,20 +33,22 @@ def index():
 
 @get('/registracija')
 def registracija():
-    return template('registracija.html', ime='', priimek='', naslov='', napaka = None)
+    return template('registracija.html', ime='', priimek='', kraj='', naslov='', telefon='', napaka = None)
 
 @post('/registracija')
 def registracija_post():
      ime = request.forms.ime
      priimek = request.forms.priimek
+     kraj = request.forms.kraj
      naslov = request.forms.naslov
+     telefon = request.forms.telefon
      try:
-         cur.execute("INSERT INTO narocniki (ime, priimek, naslov) VALUES (%s, %s, %s)",
-                     (ime, priimek, naslov))
+         cur.execute("INSERT INTO narocniki (ime, priimek, kraj, naslov, telefon) VALUES (%s, %s, %s, %s, %s, %s)",
+                     (ime, priimek, kraj, naslov, telefon))
          conn.commit()
      except Exception as ex:
          conn.rollback()
-         return template('registracija.html', ime=ime, priimek=priimek, naslov=naslov,
+         return template('registracija.html', ime=ime, priimek=priimek, kraj=kraj, naslov=naslov, telefon=telefon,
                          napaka='Zgodila se je napaka: %s' % ex)
      redirect(url('index'))
     

@@ -7,6 +7,10 @@
   <form action="{{url('registracija')}}" method="POST">
     <p>Ime: <input type="text" name="ime" value="{{ime}}"></p>
     <p>Priimek: <input type="text" name="priimek" value="{{priimek}}"></p>
+    <p>Kraj: <input type="text" name="kraj" value="{{kraj}}"></p>
     <p>Naslov: <input type="text" name="naslov" value="{{naslov}}"></p>
-    <p><input type="submit" value="Registriraj se"></p>
+    <p>Telefon: <input type="text" name="telefon" value="{{telefon}}"></p>
+    <p>
+      <a href="{{url('registracija', x=1000)}}">Registriraj se</a>
+      </p>
   </form>
