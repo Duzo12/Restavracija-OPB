@@ -28,12 +28,13 @@ def static(filename):
 
 @get('/')
 def index():
-    cur.execute("SELECT * FROM ponudba")
+    cur.execute("SELECT vrsta, cena FROM ponudba")
     return template('ponudba.html', ponudba=cur)
 
 @get('/registracija')
 def registracija():
     return template('registracija.html', ime='', priimek='', kraj='', naslov='', telefon='', napaka = None)
+
 
 @post('/registracija')
 def registracija_post():
@@ -43,7 +44,7 @@ def registracija_post():
      naslov = request.forms.naslov
      telefon = request.forms.telefon
      try:
-         cur.execute("INSERT INTO narocniki (ime, priimek, kraj, naslov, telefon) VALUES (%s, %s, %s, %s, %s, %s)",
+         cur.execute("INSERT INTO narocniki (ime, priimek, kraj, naslov, telefon) VALUES (%s, %s, %s, %s, %s)",
                      (ime, priimek, kraj, naslov, telefon))
          conn.commit()
      except Exception as ex:

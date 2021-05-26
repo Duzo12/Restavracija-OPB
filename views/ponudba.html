@@ -5,17 +5,13 @@
 
   <table cellpadding="0" cellspacing="0" border="1">
   <tr>
-    <th>Id</th>
      <th>Vrsta</th>
      <th>Cena</th>
-     <th>Zaloga</th>
   </tr>
-  %for (id, vrsta, cena, zaloga) in ponudba:
+  %for (vrsta, cena) in ponudba:
     <tr>
-        <td>{{id}}</td>
        <td>{{vrsta}}</td>
        <td>{{cena}}</td>
-       <td>{{zaloga}}</td>
     </tr>
   %end
   </table>
