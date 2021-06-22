@@ -34,10 +34,10 @@ def index():
     cur.execute("SELECT vrsta, cena FROM ponudba")
     return template('ponudba.html', ponudba=cur)
 
-def hashGesla(s):
-    m = hashlib.sha256()
-    m.update(s.encode("utf-8"))
-    return m.hexdigest()
+# def hashGesla(s):
+#     m = hashlib.sha256()
+#     m.update(s.encode("utf-8"))
+#     return m.hexdigest()
 
 def preveri_uporabnika(uporabnisko_ime, geslo1):
     try:
@@ -95,14 +95,14 @@ def prijava_post():
         cur.execute("SELECT id FROM prijava WHERE ime LIKE %s", (ime,))
         ID = cur.fetchall()
         ID = ID[0][0]
-        response.set_cookie('id', ID, secret=skrivnost)
-        response.set_cookie('account', ime, secret=skrivnost)
-        response.set_cookie('username', uporabnisko_ime, secret=skrivnost)
-        response.delete_cookie('napaka')
-        response.set_cookie('dovoljenje', status, secret=skrivnost)
+        #response.set_cookie('id', ID, secret=skrivnost)
+        #response.set_cookie('account', ime, secret=skrivnost)
+        #response.set_cookie('username', uporabnisko_ime, secret=skrivnost)
+        #response.delete_cookie('napaka')
+        #response.set_cookie('dovoljenje', status, secret=skrivnost)
     else:
         napaka = 'Uporabniško ime in geslo se ne ujemata - Namig: jan asd, ali pa se registriraj'
-        response.set_cookie('napaka', napaka, secret=skrivnost)
+        #response.set_cookie('napaka', napaka, secret=skrivnost)
     redirect('uporabnik')
 
 
