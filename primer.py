@@ -13,6 +13,9 @@ import psycopg2, psycopg2.extensions, psycopg2.extras
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODE) # se znebimo problemov s šumniki
 
 import os
+import binascii
+
+skrivnost='1234'
 
 # privzete nastavitve
 SERVER_PORT = os.environ.get('BOTTLE_PORT', 8080)
@@ -35,6 +38,22 @@ def hashGesla(s):
     m = hashlib.sha256()
     m.update(s.encode("utf-8"))
     return m.hexdigest()
+
+def preveri_uporabnika(uporabnisko_ime, geslo1):
+    try:
+        cur.execute("SELECT * FROM prijava WHERE uporabnik = %s", (uporabnisko_ime, ))
+        id,uporabnisko_ime,geslo1,ime,priimek = cur.fetchone()
+        salt = geslo1[:64]
+        geslo1 = geslo1[64:]
+        pwdhash = hashlib.pbkdf2_hmac('sha512', 
+                                  geslo1.encode('utf-8'), 
+                                  salt.encode('ascii'), 
+                                  100000)
+        pwdhash = binascii.hexlify(pwdhash).decode('ascii')
+        if pwdhash == geslo1:
+            return [ime]
+    except:
+        return False
 
 @get('/registracija')
 def registracija():
@@ -69,6 +88,27 @@ def prijava():
 @post('/prijava')
 def prijava_post():
     uporabnisko_ime = request.forms.uporabnisko_ime
+    geslo1 = request.forms.geslo1
+    preveri = preveri_uporabnika(uporabnisko_ime, geslo1)
+    if preveri:
+        ime, status = preveri
+        cur.execute("SELECT id FROM prijava WHERE ime LIKE %s", (ime,))
+        ID = cur.fetchall()
+        ID = ID[0][0]
+        response.set_cookie('id', ID, secret=skrivnost)
+        response.set_cookie('account', ime, secret=skrivnost)
+        response.set_cookie('username', uporabnisko_ime, secret=skrivnost)
+        response.delete_cookie('napaka')
+        response.set_cookie('dovoljenje', status, secret=skrivnost)
+    else:
+        napaka = 'Uporabniško ime in geslo se ne ujemata - Namig: jan asd, ali pa se registriraj'
+        response.set_cookie('napaka', napaka, secret=skrivnost)
+    redirect('uporabnik')
+
+
+""" @post('/prijava')
+def prijava_post():
+    uporabnisko_ime = request.forms.uporabnisko_ime
     geslo = request.forms.geslo
     if uporabnisko_ime is None or geslo is None:
         print('Uporabniško ima in geslo morata biti neprazna') 
@@ -91,7 +131,7 @@ def prijava_post():
         return
     #response.set_cookie('uporabnisko_ime', uporabnisko_ime) #, secret=skrivnost
     redirect('/uporabnik')
-
+ """
     
     
 ######################################################################
