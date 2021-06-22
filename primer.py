@@ -65,6 +65,7 @@ def prijava():
 #def prijava_post():
 #     uporabnisko_ime = request.forms.uporabnisko_ime
 #     geslo1 = request.forms.geslo1
+#1
     
     
 ######################################################################
