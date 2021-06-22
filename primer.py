@@ -100,10 +100,11 @@ def prijava_post():
         #response.set_cookie('username', uporabnisko_ime, secret=skrivnost)
         #response.delete_cookie('napaka')
         #response.set_cookie('dovoljenje', status, secret=skrivnost)
+        return template('uporabnik.html', napaka='Zgodila se je napaka: %s' % ex)
     else:
-        napaka = 'Uporabniško ime in geslo se ne ujemata - Namig: jan asd, ali pa se registriraj'
+        napaka = 'Uporabniško ime in geslo se ne ujemata'
         #response.set_cookie('napaka', napaka, secret=skrivnost)
-    redirect('uporabnik')
+        
 
 
 """ @post('/prijava')
