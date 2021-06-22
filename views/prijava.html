@@ -1,0 +1,11 @@
+%rebase('osnova.html', naslov='Prijava uporabnik')
+
+%if napaka:
+  <p class="opozorilo">{{napaka}}</p>
+%end
+
+  <form action="{{url('prijava')}}" method="POST">
+    <p>Uporabniško ime: <input type="text" name="uporabnisko_ime" value="{{uporabnisko_ime}}"></p>
+    <p>Geslo: <input type="text" name="geslo1" value="{{geslo1}}"></p>
+      <p><input type="submit" value="Prijavi se"></p>
+  </form>

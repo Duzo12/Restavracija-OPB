@@ -33,7 +33,7 @@ def index():
 
 @get('/registracija')
 def registracija():
-    return template('registracija.html', ime='', priimek='', kraj='', naslov='', telefon='', napaka = None)
+    return template('registracija.html', ime='', priimek='', kraj='', naslov='', telefon='', uporabnisko_ime='', geslo1='', geslo2='', napaka = None)
 
 
 @post('/registracija')
@@ -43,15 +43,29 @@ def registracija_post():
      kraj = request.forms.kraj
      naslov = request.forms.naslov
      telefon = request.forms.telefon
-     try:
-         cur.execute("INSERT INTO narocniki (ime, priimek, kraj, naslov, telefon) VALUES (%s, %s, %s, %s, %s)",
-                     (ime, priimek, kraj, naslov, telefon))
-         conn.commit()
-     except Exception as ex:
-         conn.rollback()
-         return template('registracija.html', ime=ime, priimek=priimek, kraj=kraj, naslov=naslov, telefon=telefon,
-                         napaka='Zgodila se je napaka: %s' % ex)
-     redirect(url('index'))
+     uporabnisko_ime = request.forms.uporabnisko_ime
+     geslo1 = request.forms.geslo1
+     geslo2 = request.forms.geslo2
+     if geslo1 == geslo2:
+        try:
+            cur.execute("INSERT INTO narocniki (ime, priimek, kraj, naslov, telefon, uporabnisko_ime, geslo1, geslo2) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+                        (ime, priimek, kraj, naslov, telefon, uporabnisko_ime, geslo1, geslo2))
+            conn.commit()
+        except Exception as ex:
+            conn.rollback()
+            return template('registracija.html', ime=ime, priimek=priimek, kraj=kraj, naslov=naslov, telefon=telefon, uporabnisko_ime=uporabnisko_ime, geslo1=geslo1, geslo2=geslo2,
+                napaka='Zgodila se je napaka: %s' % ex)
+        redirect(url('index'))
+
+@get('/prijava')
+def prijava():
+    return template('prijava.html', ime='', priimek='', kraj='', naslov='', telefon='', uporabnisko_ime='', geslo1='', geslo2='', napaka = None)
+
+#@post('/prijava')
+#def prijava_post():
+#     uporabnisko_ime = request.forms.uporabnisko_ime
+#     geslo1 = request.forms.geslo1
+    
     
 ######################################################################
 # Glavni program
