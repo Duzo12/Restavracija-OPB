@@ -31,6 +31,11 @@ def index():
     cur.execute("SELECT vrsta, cena FROM ponudba")
     return template('ponudba.html', ponudba=cur)
 
+def hashGesla(s):
+    m = hashlib.sha256()
+    m.update(s.encode("utf-8"))
+    return m.hexdigest()
+
 @get('/registracija')
 def registracija():
     return template('registracija.html', ime='', priimek='', kraj='', naslov='', telefon='', uporabnisko_ime='', geslo1='', geslo2='', napaka = None)
@@ -66,25 +71,25 @@ def prijava_post():
     uporabnisko_ime = request.forms.uporabnisko_ime
     geslo = request.forms.geslo
     if uporabnisko_ime is None or geslo is None:
-        nastaviSporocilo('Uporabniško ima in geslo morata biti neprazna') 
+        print('Uporabniško ima in geslo morata biti neprazna') 
         redirect('/prijava')
         return
     cur = baza.cursor()    
     hashBaza = None
     try: 
-        hashBaza = cur.execute("SELECT geslo FROM oseba WHERE uporabnisko_ime = ?", (uporabnisko_ime, )).fetchone()
+        hashBaza = cur.execute("SELECT geslo FROM narocnik WHERE uporabnisko_ime = ?", (uporabnisko_ime, )).fetchone()
         hashBaza = hashBaza[0]
     except:
         hashBaza = None
     if hashBaza is None:
-        nastaviSporocilo('Uporabniško geslo ali ime nista ustrezni') 
+        print('Uporabniško geslo ali ime nista ustrezni') 
         redirect('/prijava')
         return
     if hashGesla(geslo) != hashBaza:
-        nastaviSporocilo('Uporabniško geslo ali ime nista ustrezni') 
+        print('Uporabniško geslo ali ime nista ustrezni') 
         redirect('/prijava')
         return
-    response.set_cookie('uporabnisko_ime', uporabnisko_ime, secret=skrivnost)
+    #response.set_cookie('uporabnisko_ime', uporabnisko_ime) #, secret=skrivnost
     redirect('/uporabnik')
 
     
