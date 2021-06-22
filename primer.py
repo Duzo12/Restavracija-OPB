@@ -61,11 +61,32 @@ def registracija_post():
 def prijava():
     return template('prijava.html', ime='', priimek='', kraj='', naslov='', telefon='', uporabnisko_ime='', geslo1='', geslo2='', napaka = None)
 
-#@post('/prijava')
-#def prijava_post():
-#     uporabnisko_ime = request.forms.uporabnisko_ime
-#     geslo1 = request.forms.geslo1
-#12
+@post('/prijava')
+def prijava_post():
+    uporabnisko_ime = request.forms.uporabnisko_ime
+    geslo = request.forms.geslo
+    if uporabnisko_ime is None or geslo is None:
+        nastaviSporocilo('Uporabniško ima in geslo morata biti neprazna') 
+        redirect('/prijava')
+        return
+    cur = baza.cursor()    
+    hashBaza = None
+    try: 
+        hashBaza = cur.execute("SELECT geslo FROM oseba WHERE uporabnisko_ime = ?", (uporabnisko_ime, )).fetchone()
+        hashBaza = hashBaza[0]
+    except:
+        hashBaza = None
+    if hashBaza is None:
+        nastaviSporocilo('Uporabniško geslo ali ime nista ustrezni') 
+        redirect('/prijava')
+        return
+    if hashGesla(geslo) != hashBaza:
+        nastaviSporocilo('Uporabniško geslo ali ime nista ustrezni') 
+        redirect('/prijava')
+        return
+    response.set_cookie('uporabnisko_ime', uporabnisko_ime, secret=skrivnost)
+    redirect('/uporabnik')
+
     
     
 ######################################################################
