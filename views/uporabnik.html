@@ -1,6 +1,9 @@
 %rebase('osnova.html', naslov='Naročniki hrane')
 
+%if napaka:
+  <p class="opozorilo">{{napaka}}</p>
+%end
 
 <p>
-<a href="{{url('ponudba', x=1000)}}">Odjava</a>
+<a href="{{url('registracija', x=1000)}}">Odjava</a>
 </p>

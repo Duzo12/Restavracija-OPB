@@ -21,6 +21,7 @@ skrivnost='1234'
 SERVER_PORT = os.environ.get('BOTTLE_PORT', 8080)
 RELOADER = os.environ.get('BOTTLE_RELOADER', True)
 DB_PORT = os.environ.get('POSTGRES_PORT', 5432)
+ROOT = os.environ.get('BOTTLE_ROOT', '/')
 
 # odkomentiraj, če želiš sporočila o napakah
 debug(True)
@@ -34,10 +35,10 @@ def index():
     cur.execute("SELECT vrsta, cena FROM ponudba")
     return template('ponudba.html', ponudba=cur)
 
-# def hashGesla(s):
-#     m = hashlib.sha256()
-#     m.update(s.encode("utf-8"))
-#     return m.hexdigest()
+""" def hashGesla(s):
+    m = hashlib.sha256()
+    m.update(s.encode("utf-8"))
+    return m.hexdigest()
 
 def preveri_uporabnika(uporabnisko_ime, geslo1):
     try:
@@ -53,7 +54,45 @@ def preveri_uporabnika(uporabnisko_ime, geslo1):
         if pwdhash == geslo1:
             return [ime]
     except:
-        return False
+        return False """
+
+@get('/dodaj_ponudbo')
+def dodaj_ponudbo():
+    return template('ponudba2.html', vrsta='', cena='', zaloga='', napaka = None)
+
+@post('/dodaj_ponudbo')
+def dodaj_ponudbo_post():
+    vrsta = request.forms.vrsta
+    cena = request.forms.cena
+    zaloga = request.forms.zaloga
+    try:
+        cur.execute("INSERT INTO ponudba (vrsta, cena, zaloga) VALUES (%s, %s, %s)",
+                    (vrsta, cena, zaloga))
+        conn.commit()
+    except Exception as ex:
+        conn.rollback()
+        return template('ponudba2.html', vrsta=vrsta, cena=cena, zaloga=zaloga,
+            napaka='Zgodila se je napaka: %s' % ex)
+    redirect(url('index'))
+
+@get('/povecaj_zalogo')
+def povecaj_zalogo():
+    return template('povecaj_zalogo.html', id='', zaloga_dodana='', napaka = None)
+
+
+@post('/povecaj_zalogo')
+def povecaj_zalogo_post():
+    id = request.forms.id
+    zaloga_dodana = request.forms.zaloga_dodana 
+    try:
+        cur.execute("UPDATE ponudba SET zaloga = zaloga + %s WHERE id = %s",(int(zaloga_dodana), int(id)))
+        conn.commit()
+    except Exception as ex:
+        conn.rollback()
+        return template('povecaj_zalogo.html', id='', zaloga_dodana='',
+        napaka='Zgodila se je napaka: %s' % ex)
+
+    redirect(url('index'))
 
 @get('/registracija')
 def registracija():
@@ -81,7 +120,55 @@ def registracija_post():
                 napaka='Zgodila se je napaka: %s' % ex)
         redirect(url('index'))
 
+def javiNapaka(napaka = None):
+    sporocilo = request.get_cookie('napaka', secret=skrivnost)
+    #if napaka is None:
+        #response.delete_cookie('napaka')
+    #else:
+        #path doloca za katere domene naj bo napaka, default je cela domena
+        #response.set_cookie('napaka', napaka, path="/", secret=skrivnost)
+    return sporocilo
+
 @get('/prijava')
+def prijava():
+    
+    napaka = javiNapaka()
+    #uporabnisko_ime = request.get_cookie("uporabnisko_ime", secret=skrivnost)
+
+    return template('prijava.html', 
+                    naslov='Prijava', 
+                    napaka=napaka,
+                    uporabnisko_ime='', 
+                    geslo1='')
+
+@post('/prijava')
+def prijava_post():
+    #poberimo vnesene podatke
+    uporabnisko_ime = request.forms.uporabnisko_ime
+    geslo1 = request.forms.geslo1
+    
+    hashGeslo = None
+    try: 
+        ukaz = ("SELECT geslo FROM narocniki WHERE uporabnisko_ime = (%s)")
+        cur.execute(ukaz, (uporabnisko_ime,))
+        hashGeslo = cur.fetchone()
+        hashGeslo = hashGeslo[0]
+    except:
+        hashGeslo = None
+    if hashGeslo is None:
+        javiNapaka('Niste še registrirani')
+        redirect('{0}prijava'.format(ROOT))
+        return
+    if hashGesla(geslo1) != hashGeslo:
+        javiNapaka('Geslo ni pravilno')
+        redirect('{0}prijava'.format(ROOT))
+        return
+    #response.set_cookie('uporabnisko_ime', uporabnisko_ime, secret=skrivnost)
+    #return template('uporabnik.html', uporabnisko_ime=uporabnisko_ime, geslo1=geslo1,
+                #napaka='Zgodila se je napaka: %s' % ex)
+    redirect(url('registracija'))
+
+""" @get('/prijava')
 def prijava():
     return template('prijava.html', ime='', priimek='', kraj='', naslov='', telefon='', uporabnisko_ime='', geslo1='', geslo2='', napaka = None)
 
@@ -103,7 +190,7 @@ def prijava_post():
         return template('uporabnik.html')
     else:
         napaka = 'Uporabniško ime in geslo se ne ujemata'
-        #response.set_cookie('napaka', napaka, secret=skrivnost)
+        #response.set_cookie('napaka', napaka, secret=skrivnost) """
         
 #2
 
