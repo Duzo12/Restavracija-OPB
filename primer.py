@@ -94,6 +94,65 @@ def povecaj_zalogo_post():
 
     redirect(url('index'))
 
+@get('/spremeni_placo')
+def spremeni_placo():
+    return template('spremeni_placo.html', id='', spremeni_placo='', napaka = None)
+
+
+@post('/spremeni_placo')
+def spremeni_placo_post():
+    id = request.forms.id
+    spremeni_placo = request.forms.spremeni_placo 
+    try:
+        cur.execute("UPDATE zaposleni SET placa = placa + %s WHERE id = %s",(int(spremeni_placo), int(id)))
+        conn.commit()
+    except Exception as ex:
+        conn.rollback()
+        return template('spremeni_placo.html', id='', spremeni_placo='',
+        napaka='Zgodila se je napaka: %s' % ex)
+
+    redirect(url('index'))
+
+
+def ustvari_tabelo_narocila():
+    cur.execute("""
+        CREATE TABLE narocila (
+            id SERIAL PRIMARY KEY,
+            uporabnisko_ime TEXT NOT NULL,
+            vrsta TEXT NOT NULL,
+            datum DATE NOT NULL,
+            kolicina INTEGER NOT NULL,
+            cena TEXT NOT NULL
+        );
+    """)
+    conn.commit()
+#ni na php
+#dodaj datum
+@get('/oddaj_narocilo')
+def oddaj_narocilo():
+   return template('oddaj_narocilo.html', uporabnisko_ime='',vrsta='',kolicina='', napaka = None)
+
+@post('/oddaj_narocilo')
+def oddaj_narocilo():
+    uporabnisko_ime = request.forms.uporabnisko_ime
+    vrsta = request.forms.vrsta
+    kolicina = request.forms.kolicina
+    try:
+        cur.execute("SELECT cena FROM ponudba WHERE id = %s" %int(vrsta))
+        cena_izdelka = cur.fetchone()[0]
+        cur.execute("UPDATE ponudba SET zaloga = zaloga - %s WHERE id = %s",(int(kolicina),int(vrsta)))
+        cur.execute("INSERT INTO narocila(stevilka_narocila, uporabnisko_ime,vrsta,kolicina,cena) VALUES(DEFAULT, %s,%s,%s,%s)",
+                    (uporabnisko_ime, vrsta, kolicina, int(kolicina)*cena_izdelka))
+        conn.commit()   
+    except Exception as ex: 
+        conn.rollback()
+        return template('oddaj_narocilo.html', uporabnisko_ime='',vrsta='',kolicina='',
+        napaka='Zgodila se je napaka: %s' % ex)
+    redirect(url('indeks'))
+
+
+
+
 @get('/registracija')
 def registracija():
     return template('registracija.html', ime='', priimek='', kraj='', naslov='', telefon='', uporabnisko_ime='', geslo1='', geslo2='', napaka = None)

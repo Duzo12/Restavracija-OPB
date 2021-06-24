@@ -1,0 +1,12 @@
+%rebase('osnova.html', naslov='oddaj narocilo')
+
+%if napaka:
+  <p class="opozorilo">{{napaka}}</p>
+%end
+
+  <form action="{{url('oddaj_narocilo')}}" method="POST">
+    <p>Uporabniško ime: <input type="text" name="uporabnisko_ime" value="{{uporabnisko_ime}}"></p>
+    <p>hrana id: <input type="text" name="vrsta" value="{{vrsta}}"></p>
+    <p>Količina: <input type="number" name="kolicina" value="{{kolicina}}"></p>
+      <p><input type="submit" value="Oddaj"></p>
+  </form>
