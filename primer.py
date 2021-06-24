@@ -127,7 +127,7 @@ def ustvari_tabelo_narocila():
     """)
     conn.commit()
 #ni na php
-#dodaj datum
+#dodaj datume
 @get('/oddaj_narocilo')
 def oddaj_narocilo():
    return template('oddaj_narocilo.html', uporabnisko_ime='',vrsta='',kolicina='', napaka = None)
