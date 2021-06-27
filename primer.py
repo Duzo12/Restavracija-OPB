@@ -251,7 +251,7 @@ def prijava_post():
         napaka = 'Uporabniško ime in geslo se ne ujemata'
         #response.set_cookie('napaka', napaka, secret=skrivnost) """
         
-#21
+#213
 
 """ @post('/prijava')
 def prijava_post():
