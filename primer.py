@@ -33,7 +33,7 @@ def static(filename):
 @get('/')
 def index():
     cur.execute("SELECT vrsta, cena FROM ponudba")
-    return template('ponudba.html', ponudba=cur)
+    return template('ponudba.html', ponudba=cur, uporabnisko_ime='', geslo1='')
 
 """ def hashGesla(s):
     m = hashlib.sha256()

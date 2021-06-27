@@ -1,12 +1,15 @@
-%rebase('osnova.html', naslov='dodajanje ponudbe')
+%rebase('osnova.html', naslov='Dodajanje ponudbe')
 
 %if napaka:
   <p class="opozorilo">{{napaka}}</p>
 %end
 
   <form action="{{url('dodaj_ponudbo')}}" method="POST">
-    <p>Vrsta: <input type="text" name="vrsta" value="{{vrsta}}"></p>
-    <p>Cena: <input type="text" name="cena" value="{{cena}}"></p>
-    <p>Zaloga: <input type="number" name="zaloga" value="{{zaloga}}"></p>
-      <p><input type="submit" value="Dodaj v ponudbo"></p>
+    <p>Vrsta: <input class="input is-success" style="height:30px; width:200px" type="text" name="vrsta" value="{{vrsta}}"></p>
+    <br>
+    <p>Cena: <input class="input is-success" style="height:30px; width:200px" type="number" name="cena" value="{{cena}}"></p>
+    <br>
+    <p>Zaloga: <input class="input is-success" style="height:30px; width:200px" type="number" name="zaloga" value="{{zaloga}}"></p>
+    <br>
+      <p><input class="input is-danger is-rounded is-light" style="width:200px" type="submit" value="Dodaj v ponudbo"></p>
   </form>
