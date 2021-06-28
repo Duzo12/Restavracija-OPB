@@ -114,20 +114,7 @@ def spremeni_placo_post():
     redirect(url('index'))
 
 
-def ustvari_tabelo_narocila():
-    cur.execute("""
-        CREATE TABLE narocila (
-            id SERIAL PRIMARY KEY,
-            uporabnisko_ime TEXT NOT NULL,
-            vrsta TEXT NOT NULL,
-            datum DATE NOT NULL,
-            kolicina INTEGER NOT NULL,
-            cena TEXT NOT NULL
-        );
-    """)
-    conn.commit()
-#ni na php
-#dodaj datume
+
 @get('/oddaj_narocilo')
 def oddaj_narocilo():
    return template('oddaj_narocilo.html', uporabnisko_ime='',vrsta='',kolicina='', napaka = None)

@@ -5,7 +5,9 @@
 %end
 
   <form action="{{url('spremeni_placo')}}" method="POST">
-    <p>Id: <input type="text" name="id" value="{{id}}"></p>
-    <p>Spremeni plačo za: <input type="number" name="spremeni_placo" value="{{spremeni_placo}}"></p>
-        <p><input type="submit" value="Spremeni"></p>
+    <p>Id zaposlenega: <input  class="input is-success" style="height:30px; width:200px"  type="text" name="id" value="{{id}}"></p>
+    <br>
+    <p>Spremeni plačo za: <input  class="input is-success" style="height:30px; width:200px"  type="number" name="spremeni_placo" value="{{spremeni_placo}}"></p>
+    <br>
+        <p><input class="input is-danger is-rounded is-light" style="width:200px" type="submit" value="Spremeni"></p>
   </form>

@@ -16,7 +16,7 @@ def ustvari_tabelo_zaposleni():
             ime TEXT NOT NULL,
             priimek TEXT NOT NULL,
             telefon TEXT NOT NULL,
-            placa TEXT NOT NULL,
+            placa INTEGER NOT NULL,
             rojstvo DATE NOT NULL
         );
     """) #morda bi pri telefon dodal unique, DATE se vstavlja v obliki 'YYYY-MM-DD'
@@ -30,9 +30,9 @@ def pobrisi_tabelo_zaposleni():
 
 def uvozi_podatke_zaposleni():
     cur.execute( """
-        INSERT INTO zaposleni (ime, priimek, telefon, placa, rojstvo) VALUES ('Nejc', 'Duscak', '070 256 331', '1500 €', '1998-01-07');
-        INSERT INTO zaposleni (ime, priimek, telefon, placa, rojstvo) VALUES ('Maks', 'Perbil', '040 456 133', '1200 €', '1998-02-12');
-        INSERT INTO zaposleni (ime, priimek, telefon, placa, rojstvo) VALUES ('Jan', 'Črne', '031 262 381', '1200 €', '1997-04-30');
+        INSERT INTO zaposleni (ime, priimek, telefon, placa, rojstvo) VALUES ('Nejc', 'Duscak', '070 256 331', '1500', '1998-01-07');
+        INSERT INTO zaposleni (ime, priimek, telefon, placa, rojstvo) VALUES ('Maks', 'Perbil', '040 456 133', '1200', '1998-02-12');
+        INSERT INTO zaposleni (ime, priimek, telefon, placa, rojstvo) VALUES ('Jan', 'Črne', '031 262 381', '1200', '1997-04-30');
     """)
     conn.commit()
 
@@ -44,7 +44,10 @@ def ustvari_tabelo_narocniki():
             priimek TEXT NOT NULL,
             kraj TEXT NOT NULL,
             naslov TEXT NOT NULL,
-            telefon TEXT UNIQUE NOT NULL
+            telefon TEXT UNIQUE NOT NULL,
+            uporabnisko_ime TEXT UNIQUE NOT NULL,
+            geslo1 TEXT NOT NULL,
+            geslo2 TEXT NOT NULL
         );
     """)
     conn.commit()
@@ -57,9 +60,9 @@ def pobrisi_tabelo_narocniki():
 
 def uvozi_podatke_narocniki():
     cur.execute( """
-        INSERT INTO narocniki (ime, priimek, kraj, naslov, telefon) VALUES ('Nejc', 'Duscak', 'Ljubljana', 'Ulica 1', '070 256 331');
-        INSERT INTO narocniki (ime, priimek, kraj, naslov, telefon) VALUES ('Jan', 'Črne', 'Litija', 'Ulica 2', '031 262 381');
-        INSERT INTO narocniki (ime, priimek, kraj, naslov, telefon) VALUES ('Maks', 'Perbil', 'Vrhnika', 'Ulica 3', '040 456 133');
+        INSERT INTO narocniki (ime, priimek, kraj, naslov, telefon, uporabnisko_ime, geslo1, geslo2) VALUES ('Nejc', 'Duscak', 'Ljubljana', 'Ulica 1', '070 256 331', 'nd', 'geslo', 'geslo');
+        INSERT INTO narocniki (ime, priimek, kraj, naslov, telefon, uporabnisko_ime, geslo1, geslo2) VALUES ('Jan', 'Črne', 'Litija', 'Ulica 2', '031 262 381', 'jc', 'geslo', 'geslo');
+        INSERT INTO narocniki (ime, priimek, kraj, naslov, telefon, uporabnisko_ime, geslo1, geslo2) VALUES ('Maks', 'Perbil', 'Vrhnika', 'Ulica 3', '040 456 133', 'mp', 'geslo', 'geslo');
     """)
     conn.commit()
 
@@ -68,8 +71,8 @@ def ustvari_tabelo_ponudba():
         CREATE TABLE ponudba (
             id SERIAL PRIMARY KEY,
             vrsta TEXT NOT NULL,
-            cena TEXT NOT NULL,
-            zaloga TEXT NOT NULL
+            cena INTEGER NOT NULL,
+            zaloga INTEGER NOT NULL
         );
     """)
     conn.commit()
@@ -82,17 +85,32 @@ def pobrisi_tabelo_ponudba():
 
 def uvozi_podatke_ponudba():
     cur.execute("""
-        INSERT INTO ponudba (vrsta, cena, zaloga) VALUES ('Hamburger', '6€', '4');
-        INSERT INTO ponudba (vrsta, cena, zaloga) VALUES ('Pizza', '8€', '4');
-        INSERT INTO ponudba (vrsta, cena, zaloga) VALUES ('Čevapčiči', '7€', '4');
-        INSERT INTO ponudba (vrsta, cena, zaloga) VALUES ('Pommes Frittes', '2€', '4');
-        INSERT INTO ponudba (vrsta, cena, zaloga) VALUES ('Kebab', '3€', '4');
-        INSERT INTO ponudba (vrsta, cena, zaloga) VALUES ('Burek', '2€', '4');
-        INSERT INTO ponudba (vrsta, cena, zaloga) VALUES ('Taquitosi', '4€', '4');
-        INSERT INTO ponudba (vrsta, cena, zaloga) VALUES ('pohan piščanec', '7€', '4');
-        INSERT INTO ponudba (vrsta, cena, zaloga) VALUES ('Sladoled', '3€', '4');
+        INSERT INTO ponudba (vrsta, cena, zaloga) VALUES ('Hamburger', 6, 4);
+        INSERT INTO ponudba (vrsta, cena, zaloga) VALUES ('Pizza', 8, 4);
+        INSERT INTO ponudba (vrsta, cena, zaloga) VALUES ('Čevapčiči', 7, 4);
+        INSERT INTO ponudba (vrsta, cena, zaloga) VALUES ('Pommes Frittes', 2, 4);
+        INSERT INTO ponudba (vrsta, cena, zaloga) VALUES ('Kebab', 3, 4);
+        INSERT INTO ponudba (vrsta, cena, zaloga) VALUES ('Burek', 2, 4);
+        INSERT INTO ponudba (vrsta, cena, zaloga) VALUES ('Taquitosi', 4, 4);
+        INSERT INTO ponudba (vrsta, cena, zaloga) VALUES ('Pohan piščanec', 7, 4);
+        INSERT INTO ponudba (vrsta, cena, zaloga) VALUES ('Sladoled', 3, 4);
     """)
     conn.commit()
+
+def ustvari_tabelo_narocila():
+    cur.execute("""
+        CREATE TABLE narocila (
+            id SERIAL PRIMARY KEY,
+            uporabnisko_ime TEXT NOT NULL,
+            vrsta TEXT NOT NULL,
+            datum DATE NOT NULL,
+            kolicina INTEGER NOT NULL,
+            cena INTEGER NOT NULL
+        );
+    """)
+    conn.commit()
+#ni na php
+#se datumi
 
 # def uvozi_podatke():
 #     with open("podatki/obcine.csv", encoding="UTF-8") as f:
