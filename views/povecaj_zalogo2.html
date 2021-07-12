@@ -1,0 +1,30 @@
+%rebase('osnova.html', naslov='Povečaj')
+
+%if napaka:
+  <p class="opozorilo">{{napaka}}</p>
+%end
+
+  <form action="{{url('povecaj_zalogo')}}" method="POST">
+    <p> <label for="vrsta_zaloge">Povečaj zaloga za:</label>
+        <select name="vrsta_zaloge" style="width:auto; display:inline-block;"  >
+            %for vrsta in ponudba:
+            <!-- cena = "{0} €".format(cena) -->
+                <option value="{{vrsta[0]}}">{{vrsta[0]}}</option> 
+            %end
+        </select>
+    </p>
+    <br>
+    <p>Povečaj zalogo za: <input class="input is-success" style="height:30px; width:200px" type="number" name="kolicina_nove_zaloge" min="1" value="{{kolicina_nove_zaloge}}"></p>
+    <br>
+        <p><input type="submit" class="input is-danger is-rounded is-light" style="width:200px" value="Povečaj"></p>
+  </form>
+
+
+<!--  <option value="{{vrsta}}">{{vrsta}}</option> 
+  <label for="cars">Choose a car:</label>
+  <select name="cars" id="cars">
+    <option value="volvo">Volvo</option>
+    <option value="saab">Saab</option>
+    <option value="opel">Opel</option>
+    <option value="audi">Audi</option>
+  </select>              name="vrsta" id="ponudba"      -->
