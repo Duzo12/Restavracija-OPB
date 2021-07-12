@@ -3,7 +3,7 @@
 
 # uvozimo bottle.py
 from bottle import debug
-from bottleext import get, post, run, request, template, redirect, static_file, url
+from bottleext import get, post, run, request, template, redirect, static_file, url, response
 
 # uvozimo ustrezne podatke za povezavo
 import auth_public as auth
@@ -27,14 +27,28 @@ ROOT = os.environ.get('BOTTLE_ROOT', '/')
 # odkomentiraj, če želiš sporočila o napakah
 debug(True)
 
+def nastaviSporocilo(sporocilo = None):
+    # global napakaSporocilo
+    staro = request.get_cookie("sporocilo", secret=skrivnost)
+    if sporocilo is None:
+        response.delete_cookie('sporocilo') #če funkciji ne podamo ničesar, izbriše piškotek z imenom sporočilo
+    else:
+        response.set_cookie('sporocilo', sporocilo, path="/", secret=skrivnost)
+    return staro
+
+# Mapa za statične vire (slike, css, ...)
+static_dir = "./static"
+
+
 @get('/static/<filename:path>')
 def static(filename):
      return static_file(filename, root='static')
 
 @get('/')
 def index():
+    napaka = request.get_cookie('sporocilo', secret=skrivnost)
     cur.execute("SELECT vrsta, cena FROM ponudba")
-    return template('ponudba.html', ponudba=cur, uporabnisko_ime='', geslo1='')
+    return template('ponudba.html', ponudba=cur, uporabnisko_ime='', geslo1='', napaka = napaka)
 
 """ def hashGesla(s):
     m = hashlib.sha256()
@@ -156,14 +170,18 @@ def password_hash(s):
 
 @get('/registracija')
 def registracija():
-    return template('registracija.html', ime='', priimek='', kraj='', naslov='', telefon='', uporabnisko_ime='', geslo1='', geslo2='', napaka = None)
+    napaka = nastaviSporocilo()
+    return template('registracija.html', ime='', priimek='', kraj='', naslov='', telefon='', uporabnisko_ime='', geslo1='', geslo2='', napaka = napaka)
+    #return template('registracija.html', napaka = napaka)
 
 def preveri_za_narocnika(narocnik):
     try:
         cur.execute("SELECT up_ime FROM narocniki WHERE up_ime = %s", (narocnik, ))
         #uporabnik = cur.fetchone([0])
-        narocnik = cur.fetchone()
-        if narocnik==None:
+        narocnik1 = cur.fetchone()
+        cur.execute("SELECT up_ime FROM zaposleni WHERE up_ime = %s", (narocnik, ))
+        narocnik2 = cur.fetchone()
+        if narocnik1==None and narocnik2==None:
             return True
         else:
             return False
@@ -183,11 +201,19 @@ def registracija_post():
      geslo2 = request.forms.geslo2
      #jezekdotak=cur.execute("SELECT * FROM narocniki WHERE up_ime=%s", (uporabnisko_ime))
      if preveri_za_narocnika(uporabnisko_ime) == False:
-         return template('registracija.html', ime=ime, priimek=priimek, kraj=kraj, naslov=naslov, telefon=telefon, uporabnisko_ime=uporabnisko_ime, geslo1=geslo1, geslo2=geslo2,
-                napaka='Uporabnik s tem uporabniskim imenom že obstaja')
-     elif not geslo1==geslo2:
-         return template('registracija.html', ime=ime, priimek=priimek, kraj=kraj, naslov=naslov, telefon=telefon, uporabnisko_ime=uporabnisko_ime, geslo1=geslo1, geslo2=geslo2,
-                napaka='Gesli se ne ujemata')
+        return template('registracija.html', ime=ime, priimek=priimek, kraj=kraj, naslov=naslov, telefon=telefon, uporabnisko_ime=uporabnisko_ime, geslo1=geslo1, geslo2=geslo2,
+                napaka='Uporabnik s tem uporabniškim imenom že obstaja')
+        #return template('registracija.html', ime='', priimek='', kraj='', naslov='', telefon='', uporabnisko_ime='', geslo1='', geslo2='',
+            #napaka = 'Uporabnik s tem uporabniškim imenom že obstaja')
+        #nastaviSporocilo('Uporabnik s tem imenom že obstaja') 
+        #redirect('/registracija')
+     if geslo1 != geslo2:
+        return template('registracija.html', ime=ime, priimek=priimek, kraj=kraj, naslov=naslov, telefon=telefon, uporabnisko_ime=uporabnisko_ime, geslo1=geslo1, geslo2=geslo2,
+            napaka='Gesli se ne ujemata')
+        return template('registracija.html', ime='', priimek='', kraj='', naslov='', telefon='', uporabnisko_ime='', geslo1='', geslo2='',
+            napaka = 'Gesli se ne ujemata')
+        #nastaviSporocilo('Gesli se ne ujemata') 
+        #redirect('/registracija')
      else:
         try:
             geslo = password_hash(geslo1)
@@ -199,6 +225,9 @@ def registracija_post():
             conn.rollback()
             return template('registracija.html', ime=ime, priimek=priimek, kraj=kraj, naslov=naslov, telefon=telefon, uporabnisko_ime=uporabnisko_ime, geslo1=geslo1, geslo2=geslo2,
                 napaka='Zgodila se je napaka: %s' % ex)
+            #nastaviSporocilo('Zgodila se je napaka') 
+            #redirect('/registracija')
+        nastaviSporocilo('Registracija uspešna. Lahko se prijavite.')
         redirect(url('index'))
 
 
