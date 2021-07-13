@@ -1,0 +1,22 @@
+%rebase('osnova.html', naslov='Duzo Restavracija')
+<img src="https://github.com/Duzo12/Restavracija-OPB/blob/main/views/Slike/dostava.jpg?raw=true.jpg" alt="Dostava hrane" width=400> 
+<br>
+%if napaka:
+  <p class="opozorilo">{{napaka}}</p>
+%end
+<br>
+<form action="{{url('prijava')}}" method="POST">
+    <p>Uporabniško ime: <input class="input is-success" style="height:30px; width:200px" type="text" name="uporabnisko_ime" value="{{uporabnisko_ime}}"></p>
+    <br>
+    <p>Geslo: <input class="input is-success" style="height:30px; width:200px" type="text" name="geslo" value="{{geslo}}"></p>
+    <br>
+    <p><input  class="input is-danger is-rounded is-light" style="width:200px" type="submit" value="Prijavi se"></p>
+    </form>      
+
+    <td align="center">
+      <br>
+      <p>
+        <a href="{{url('registracija')}}" class="button is-danger is-rounded is-light">Registracija</a>
+      </p>
+    </td> 
+  </tr>
