@@ -48,6 +48,8 @@ def static(filename):
 def index():
     napaka = request.get_cookie('sporocilo', secret=skrivnost)
     cur.execute("SELECT vrsta, cena FROM ponudba")
+    #hamburger = 'Hamburger'
+    #cur.execute("SELECT vrsta, cena FROM ponudba WHERE vrsta=%s", (hamburger, ))
     return template('ponudba.html', ponudba=cur, uporabnisko_ime='', geslo1='', napaka = napaka)
 
 """ def hashGesla(s):
