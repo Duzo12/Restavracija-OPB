@@ -1,3 +1,4 @@
+print('SERVER SE JE ZAGNAL')
 #!/usr/bin/python
 # -*- encoding: utf-8 -*-
 
@@ -57,32 +58,36 @@ def index():
     #cur.execute("SELECT vrsta, cena FROM ponudba")
     return template('zacetna_stran.html', uporabnisko_ime='', geslo='', napaka = napaka)
 
-def preveriUporabnika(): 
-    username = request.get_cookie("username", secret=skrivnost)
-    if username:
-        cur = baza.cursor()    
-        uporabni = None
-        try: 
-            uporabnik = cur.execute("SELECT * FROM oseba WHERE username = ?", (username, )).fetchone()
-        except:
-            uporabnik = None
-        if uporabnik: 
-            return uporabnik
-    redirect('/prijava')
+#def preveriUporabnika(): 
+#    username = request.get_cookie("username", secret=skrivnost)
+#    if username:
+#        cur = baza.cursor()    
+#        uporabni = None
+#        try: 
+#            uporabnik = cur.execute("SELECT * FROM oseba WHERE username = ?", (username, )).fetchone()
+#        except:
+#            uporabnik = None
+#        if uporabnik: 
+#            return uporabnik
+#    redirect('/prijava')
 
 
-def hashGesla(s):
-    m = hashlib.sha256()
-    m.update(s.encode("utf-8"))
-    return m.hexdigest()
+#def hashGesla(s):
+#    m = hashlib.sha256()
+#    m.update(s.encode("utf-8"))
+#    return m.hexdigest()
 
 
 @post('/')
 def prijava():
     uporabnik = request.forms.uporabnisko_ime
     geslo = request.forms.geslo
+    print(geslo)
+    print(uporabnik)
+    print(password_hash(geslo))
     #cur.execute("UPDATE ponudba SET zaloga = zaloga + %s WHERE vrsta = %s",(int(zaloga_dodana), id))
     if uporabnik is None or geslo is None:
+        print('podatki manjkajo')
         nastaviSporocilo('Uporabniško ima in geslo morata biti neprazna') 
         redirect('/')
         return
@@ -91,26 +96,33 @@ def prijava():
     try: 
         hashBaza_zaposlen = cur.execute("SELECT geslo FROM zaposleni WHERE up_ime = %s", (uporabnik, )).fetchone()
         hashBaza_zaposlen = hashBaza_zaposlen[0]
+        print(hashBaza_zaposlen)
     except:
         hashBaza_zaposlen = None
     try:
         hashBaza_narocnik = cur.execute("SELECT geslo FROM narocniki WHERE up_ime = %s", (uporabnik, )).fetchone()
         hashBaza_narocnik = hashBaza_narocnik[0]
+        print(hashBaza_narocnik)
     except:
         hashBaza_narocnik = None
     if hashBaza_narocnik is None and hashBaza_zaposlen is None:
+        print('ne obstaja niti narocnik, niti zaposlen')
         nastaviSporocilo('Uporabniško geslo ali ime nista ustrezni 1') 
         redirect('/')
         return
     if hashBaza_zaposlen is None:
+        print('zaposlen is none')
         if hashBaza_narocnik is None:
+            print('narocnika ne obstaja')
             nastaviSporocilo('Uporabniško geslo ali ime nista ustrezni 2') 
             redirect('/')
             return
-        if hashGesla(geslo) != hashBaza_narocnik:
+        if password_hash(geslo) != hashBaza_narocnik:
+            print('geslo narocnik se ne ujema')
             nastaviSporocilo('Uporabniško geslo ali ime nista ustrezni 3') 
             redirect('/')
             return
+        print('zaposlenega smo uspesno prijavili')
         response.set_cookie('uporabnik', uporabnik, secret=skrivnost)
         redirect('/ponudba')
     #if hashBaza_narocnik is not None:
@@ -298,57 +310,6 @@ def registracija_post():
             #redirect('/registracija')
         nastaviSporocilo('Registracija uspešna. Lahko se prijavite.')
         redirect(url('index'))
-
-
-
-#def javiNapaka(napaka = None):
-#    sporocilo = request.get_cookie('napaka', secret=skrivnost)
-    #if napaka is None:
-        #response.delete_cookie('napaka')
-    #else:
-        #path doloca za katere domene naj bo napaka, default je cela domena
-        #response.set_cookie('napaka', napaka, path="/", secret=skrivnost)
-#    return sporocilo
-
-#@get('/prijava')
-#def prijava():
-    
-#    napaka = javiNapaka()
-    #uporabnisko_ime = request.get_cookie("uporabnisko_ime", secret=skrivnost)
-
-#    return template('prijava.html', 
-#                    naslov='Prijava', 
-#                    napaka=napaka,
-#                    uporabnisko_ime='', 
-#                    geslo1='')
-
-#@post('/prijava')
-#def prijava_post():
-#    #poberimo vnesene podatke
-#    uporabnisko_ime = request.forms.uporabnisko_ime
-#    geslo1 = request.forms.geslo1
-#    
-#    hashGeslo = None
-#    try: 
-#        ukaz = ("SELECT geslo FROM narocniki WHERE uporabnisko_ime = (%s)")
-#        cur.execute(ukaz, (uporabnisko_ime,))
-#        hashGeslo = cur.fetchone()
-#        hashGeslo = hashGeslo[0]
-#    except:
-#        hashGeslo = None
-#    if hashGeslo is None:
-#        javiNapaka('Niste še registrirani')
-#        redirect('{0}prijava'.format(ROOT))
-#        return
-#    if hashGesla(geslo1) != hashGeslo:
-#        javiNapaka('Geslo ni pravilno')
-#        redirect('{0}prijava'.format(ROOT))
-#        return
-#    #response.set_cookie('uporabnisko_ime', uporabnisko_ime, secret=skrivnost)
-#    #return template('uporabnik.html', uporabnisko_ime=uporabnisko_ime, geslo1=geslo1,
-#                #napaka='Zgodila se je napaka: %s' % ex)
-#    redirect(url('registracija'))
-
 
 
 
