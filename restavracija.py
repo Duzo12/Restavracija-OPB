@@ -82,11 +82,9 @@ def index():
 def prijava():
     uporabnik = request.forms.uporabnisko_ime
     geslo = request.forms.geslo
-    print(geslo)
-    print(uporabnik)
-    print(password_hash(geslo))
-    #cur.execute("UPDATE ponudba SET zaloga = zaloga + %s WHERE vrsta = %s",(int(zaloga_dodana), id))
-    if uporabnik is None or geslo is None:
+    #print(uporabnik)
+    #print(geslo)
+    if uporabnik == '' or geslo == '':
         print('podatki manjkajo')
         nastaviSporocilo('Uporabniško ima in geslo morata biti neprazna') 
         redirect('/')
@@ -94,36 +92,37 @@ def prijava():
     hashBaza_zaposlen = None
     hashBaza_narocnik = None
     try: 
-        hashBaza_zaposlen = cur.execute("SELECT geslo FROM zaposleni WHERE up_ime = %s", (uporabnik, )).fetchone()
-        hashBaza_zaposlen = hashBaza_zaposlen[0]
-        print(hashBaza_zaposlen)
+        cur.execute("SELECT geslo FROM zaposleni WHERE up_ime = %s", (uporabnik, ))
+        hashBaza_zaposlen = cur.fetchone()[0]
+        #print(hashBaza_zaposlen)
     except:
         hashBaza_zaposlen = None
     try:
-        hashBaza_narocnik = cur.execute("SELECT geslo FROM narocniki WHERE up_ime = %s", (uporabnik, )).fetchone()
-        hashBaza_narocnik = hashBaza_narocnik[0]
-        print(hashBaza_narocnik)
+        cur.execute("SELECT geslo FROM narocniki WHERE up_ime = %s", (uporabnik, ))
+        hashBaza_narocnik = cur.fetchone()[0]
+        #print(hashBaza_narocnik)
     except:
         hashBaza_narocnik = None
     if hashBaza_narocnik is None and hashBaza_zaposlen is None:
-        print('ne obstaja niti narocnik, niti zaposlen')
-        nastaviSporocilo('Uporabniško geslo ali ime nista ustrezni 1') 
+        #print('ne obstaja niti narocnik, niti zaposlen')
+        nastaviSporocilo('Uporabniško ime ali geslo ni ustrezno') 
         redirect('/')
         return
     if hashBaza_zaposlen is None:
-        print('zaposlen is none')
-        if hashBaza_narocnik is None:
-            print('narocnika ne obstaja')
-            nastaviSporocilo('Uporabniško geslo ali ime nista ustrezni 2') 
-            redirect('/')
-            return
+        #print('zaposlen is None')
+        #if hashBaza_narocnik is None:
+        #    print('narocnika ne obstaja')
+        #    nastaviSporocilo('Uporabniško geslo ali ime nista ustrezni') 
+        #    redirect('/')
+        #    return
         if password_hash(geslo) != hashBaza_narocnik:
-            print('geslo narocnik se ne ujema')
-            nastaviSporocilo('Uporabniško geslo ali ime nista ustrezni 3') 
+            #print('geslo narocnik se ne ujema')
+            nastaviSporocilo('Uporabniško ime ali geslo ni ustrezno') 
             redirect('/')
             return
-        print('zaposlenega smo uspesno prijavili')
+        #print('narocnika smo uspesno prijavili')
         response.set_cookie('uporabnik', uporabnik, secret=skrivnost)
+        nastaviSporocilo("{0} pozdravljen! Preglej našo današnjo ponudbo in če želiš, oddaj naročilo.".format(uporabnik))
         redirect('/ponudba')
     #if hashBaza_narocnik is not None:
     #        nastaviSporocilo('Uporabniško geslo ali ime nista ustrezni') 
@@ -134,6 +133,8 @@ def prijava():
     #    redirect('/')
     #    return
     response.set_cookie('uporabnik', uporabnik, secret=skrivnost)
+    print('zaposlenega smo uspešno prijavili')
+    nastaviSporocilo("{0} pozdravljen!".format(uporabnik))
     redirect('/vodenje_restavracija')
 
 @get('/ponudba')
@@ -144,10 +145,9 @@ def ponudba():
     cur.execute("SELECT vrsta, cena FROM ponudba WHERE zaloga > 0")
     return template('ponudba3.html', ponudba=cur, napaka = napaka)
 
-@post('/vodenje_restavracija')
+@get('/vodenje_restavracija')
 def vodenje_restavracije():
     uporabnik = request.get_cookie('uporabnik', secret=skrivnost)
-    nastaviSporocilo("{0} pozdravljen!".format(uporabnik))
     napaka = request.get_cookie('sporocilo', secret=skrivnost)
     return template('vodenje_restavracije.html', napaka = napaka)
 
@@ -185,6 +185,8 @@ def povecaj_zalogo_post():
     #zaloga_dodana = request.forms.zaloga_dodana
     id = request.forms.vrsta_zaloge
     zaloga_dodana = request.forms.kolicina_nove_zaloge
+    print(id)
+    print(zaloga_dodana)
     try:
         #cur.execute("UPDATE ponudba SET zaloga = zaloga + %s WHERE id = %s",(int(zaloga_dodana), int(id)))
         cur.execute("UPDATE ponudba SET zaloga = zaloga + %s WHERE vrsta = %s",(int(zaloga_dodana), id))
@@ -291,8 +293,8 @@ def registracija_post():
      if geslo1 != geslo2:
         return template('registracija.html', ime=ime, priimek=priimek, kraj=kraj, naslov=naslov, telefon=telefon, uporabnisko_ime=uporabnisko_ime, geslo1=geslo1, geslo2=geslo2,
             napaka='Gesli se ne ujemata')
-        return template('registracija.html', ime='', priimek='', kraj='', naslov='', telefon='', uporabnisko_ime='', geslo1='', geslo2='',
-            napaka = 'Gesli se ne ujemata')
+        #return template('registracija.html', ime='', priimek='', kraj='', naslov='', telefon='', uporabnisko_ime='', geslo1='', geslo2='',
+        #    napaka = 'Gesli se ne ujemata')
         #nastaviSporocilo('Gesli se ne ujemata') 
         #redirect('/registracija')
      else:
