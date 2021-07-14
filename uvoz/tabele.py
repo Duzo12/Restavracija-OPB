@@ -134,6 +134,7 @@ def podeli_pravice():
         GRANT INSERT ON narocniki TO javnost;
         GRANT INSERT ON ponudba TO javnost;
         GRANT UPDATE ON ponudba TO javnost;
+        GRANT SELECT ON zaposleni TO javnost;
         GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO javnost;
     """)
 #ni na php
