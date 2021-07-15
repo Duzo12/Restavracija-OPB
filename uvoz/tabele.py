@@ -8,6 +8,7 @@ psycopg2.extensions.register_type(psycopg2.extensions.UNICODE) # se znebimo prob
 
 import csv
 
+
 testna_sprem = 7
 def ustvari_tabelo_zaposleni():
     cur.execute("""
@@ -30,10 +31,20 @@ def pobrisi_tabelo_zaposleni():
     """)
     conn.commit()
 
+import hashlib #za kodiranje gesel
+
+
+def password_hash(s):
+    """Vrni SHA-512 hash danega UTF-8 niza. Gesla vedno spravimo v bazo
+       kodirana s to funkcijo."""
+    h = hashlib.sha512()
+    h.update(s.encode('utf-8'))
+    return h.hexdigest()
+
 def uvozi_podatke_zaposleni():
     cur.execute("""
-        INSERT INTO zaposleni (ime, priimek, telefon, placa, rojstvo, up_ime, geslo) VALUES ('Nejc', 'Duscak', '070 256 331', 1500.00, '1998-01-07', 'nejcduscak', 'geslo1');
-    """)
+        INSERT INTO zaposleni (ime, priimek, telefon, placa, rojstvo, up_ime, geslo) VALUES ('Nejc', 'Duscak', '070 256 331', 1500.00, '1998-01-07', 'nejcduscak', %s);
+    """, (password_hash('geslo'), ))
     conn.commit()
 
 def ustvari_tabelo_narocniki():
@@ -135,6 +146,8 @@ def podeli_pravice():
         GRANT INSERT ON ponudba TO javnost;
         GRANT UPDATE ON ponudba TO javnost;
         GRANT SELECT ON zaposleni TO javnost;
+        GRANT SELECT ON ponudba TO javnost;
+        GRANT INSERT ON zaposleni TO javnost;
         GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO javnost;
     """)
 #ni na php
