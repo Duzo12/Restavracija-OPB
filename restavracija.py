@@ -3,7 +3,7 @@ print('SERVER SE JE ZAGNAL')
 # -*- encoding: utf-8 -*-
 
 # uvozimo bottle.py
-from bottle import debug
+from bottle import debug, route
 from bottleext import get, post, run, request, template, redirect, static_file, url, response
 
 # uvozimo ustrezne podatke za povezavo
@@ -40,42 +40,15 @@ def nastaviSporocilo(sporocilo = None):
 # Mapa za statične vire (slike, css, ...)
 static_dir = "./static"
 
-
-@get('/static/<filename:path>')
+@route("/static/<filename:path>")
 def static(filename):
-     return static_file(filename, root='static')
+    return static_file(filename, root=static_dir)
 
 @get('/')
 def index():
     nastaviSporocilo('Pozdravljeni v Duzo Restavracija. V kolikor še niste naš član se prosim registrirajte.')
     napaka = request.get_cookie('sporocilo', secret=skrivnost)
-    #uporabnik = request.get_cookie('account', secret=skrivnost)
-    #registracija = request.get_cookie('registracija', secret=skrivnost)
-    #napaka = request.get_cookie('napaka', secret=skrivnost)
-    #status = request.get_cookie('dovoljenje', secret=skrivnost)
-
-    #nastaviSporocilo('Pozdravljeni v Duzo Restavracija. V kolikor še niste naš član se prosim registrirajte')
-    #cur.execute("SELECT vrsta, cena FROM ponudba")
     return template('zacetna_stran.html', uporabnisko_ime='', geslo='', napaka = napaka)
-
-#def preveriUporabnika(): 
-#    username = request.get_cookie("username", secret=skrivnost)
-#    if username:
-#        cur = baza.cursor()    
-#        uporabni = None
-#        try: 
-#            uporabnik = cur.execute("SELECT * FROM oseba WHERE username = ?", (username, )).fetchone()
-#        except:
-#            uporabnik = None
-#        if uporabnik: 
-#            return uporabnik
-#    redirect('/prijava')
-
-
-#def hashGesla(s):
-#    m = hashlib.sha256()
-#    m.update(s.encode("utf-8"))
-#    return m.hexdigest()
 
 
 @post('/')
@@ -85,7 +58,7 @@ def prijava():
     #print(uporabnik)
     #print(geslo)
     if uporabnik == '' or geslo == '':
-        print('podatki manjkajo')
+        #print('podatki manjkajo')
         nastaviSporocilo('Uporabniško ima in geslo morata biti neprazna') 
         redirect('/')
         return
@@ -103,6 +76,8 @@ def prijava():
         #print(hashBaza_narocnik)
     except:
         hashBaza_narocnik = None
+    #print(hashBaza_zaposlen)
+    #print(hashBaza_narocnik)
     if hashBaza_narocnik is None and hashBaza_zaposlen is None:
         #print('ne obstaja niti narocnik, niti zaposlen')
         nastaviSporocilo('Uporabniško ime ali geslo ni ustrezno') 
@@ -110,13 +85,8 @@ def prijava():
         return
     if hashBaza_zaposlen is None:
         #print('zaposlen is None')
-        #if hashBaza_narocnik is None:
-        #    print('narocnika ne obstaja')
-        #    nastaviSporocilo('Uporabniško geslo ali ime nista ustrezni') 
-        #    redirect('/')
-        #    return
         if password_hash(geslo) != hashBaza_narocnik:
-            #print('geslo narocnik se ne ujema')
+            print('geslo narocnik se ne ujema')
             nastaviSporocilo('Uporabniško ime ali geslo ni ustrezno') 
             redirect('/')
             return
@@ -128,22 +98,38 @@ def prijava():
     #        nastaviSporocilo('Uporabniško geslo ali ime nista ustrezni') 
     #        redirect('/')
     #        return
-    #if hashGesla(geslo) != hashBaza_narocnik:
-    #    nastaviSporocilo('Uporabniško geslo ali ime nista ustrezni') 
-    #    redirect('/')
-    #    return
+    if password_hash(geslo) != hashBaza_zaposlen:
+        #print('geslo zaposlen se ne ujema')
+        nastaviSporocilo('Uporabniško ime ali geslo ni ustrezno') 
+        redirect('/')
+        return
     response.set_cookie('uporabnik', uporabnik, secret=skrivnost)
-    print('zaposlenega smo uspešno prijavili')
+    #print('zaposlenega smo uspešno prijavili')
     nastaviSporocilo("{0} pozdravljen!".format(uporabnik))
     redirect('/vodenje_restavracija')
+
+@get('/odjava')
+def odjava():
+    response.delete_cookie('uporabnik')
+    nastaviSporocilo('Odjava uspešna. Lep pozdrav in nasvidenje.')
+    redirect('/')
+
 
 @get('/ponudba')
 def ponudba():
     uporabnik = request.get_cookie('uporabnik', secret=skrivnost)
     nastaviSporocilo("{0} pozdravljen! Preglej našo današnjo ponudbo in če želiš, oddaj naročilo.".format(uporabnik))
     napaka = request.get_cookie('sporocilo', secret=skrivnost)
+    nastaviSporocilo()
     cur.execute("SELECT vrsta, cena FROM ponudba WHERE zaloga > 0")
-    return template('ponudba3.html', ponudba=cur, napaka = napaka)
+    ponudba=cur.fetchall()
+    #return template('ponudba3.html', ponudba=cur, napaka = napaka)
+    return template('ponudba4.html', ponudba=ponudba, kolicina='', napaka = napaka)
+
+
+#@post('/ponudba')
+#def narocilo():
+
 
 @get('/vodenje_restavracija')
 def vodenje_restavracije():
@@ -169,7 +155,8 @@ def dodaj_ponudbo_post():
         conn.rollback()
         return template('ponudba2.html', vrsta=vrsta, cena=cena, zaloga=zaloga,
             napaka='Zgodila se je napaka: %s' % ex)
-    redirect(url('index'))
+    nastaviSporocilo("V ponudbo je bilo uspešno dodano {zaloga} {vrsta}, cena bo {cena} €.". format(vrsta=vrsta, cena=cena, zaloga=zaloga))
+    redirect(url('vodenje_restavracije'))
 
 @get('/povecaj_zalogo')
 def povecaj_zalogo():
@@ -185,21 +172,20 @@ def povecaj_zalogo_post():
     #zaloga_dodana = request.forms.zaloga_dodana
     id = request.forms.vrsta_zaloge
     zaloga_dodana = request.forms.kolicina_nove_zaloge
-    print(id)
-    print(zaloga_dodana)
+    #print(id)
+    #print(zaloga_dodana)
     try:
         #cur.execute("UPDATE ponudba SET zaloga = zaloga + %s WHERE id = %s",(int(zaloga_dodana), int(id)))
         cur.execute("UPDATE ponudba SET zaloga = zaloga + %s WHERE vrsta = %s",(int(zaloga_dodana), id))
         conn.commit()
     except Exception as ex:
         conn.rollback()
-        #return template('povecaj_zalogo.html', id='', zaloga_dodana='',
-        #napaka='Zgodila se je napaka: %s' % ex)
         cur.execute("SELECT vrsta FROM ponudba")
         ponudba = cur.fetchall()
         return template('povecaj_zalogo2.html', ponudba=ponudba, vrsta_zaloge='', kolicina_nove_zaloge='',
         napaka='Zgodila se je napaka: %s' % ex)
-    redirect(url('index'))
+    nastaviSporocilo("Število zaloge za {id} se je uspešno povečalo za {zaloga_dodana}.".format(id=id, zaloga_dodana=zaloga_dodana))
+    redirect(url('vodenje_restavracije'))
 
 @get('/spremeni_placo')
 def spremeni_placo():
@@ -218,7 +204,7 @@ def spremeni_placo_post():
         return template('spremeni_placo.html', id='', spremeni_placo='',
         napaka='Zgodila se je napaka: %s' % ex)
 
-    redirect(url('index'))
+    redirect(url('vodenje_restavracije'))
 
 
 @get('/oddaj_narocilo')
@@ -243,6 +229,28 @@ def oddaj_narocilo():
         napaka='Zgodila se je napaka: %s' % ex)
     redirect(url('indeks'))
 
+@post('/ponudba')
+def narocilo():
+    uporabnik = request.get_cookie('uporabnik', secret=skrivnost)
+    vrsta = request.forms.vrsta_zaloge
+    kolicina = request.forms.kolicina
+    if kolicina=='':
+        nastaviSporocilo('Naročite lahko minimalno eno jed. Prosim izpolnite polje kolicina')
+        redirect('/ponudba')
+    print(vrsta)
+    print(kolicina)
+    cur.execute("SELECT cena FROM ponudba WHERE vrsta = %s", (vrsta, ))
+    cena_jedi = cur.fetchone()[0]
+    #print(cena_izdelka)
+    cena_narocila = float(cena_jedi) * int(kolicina)
+    print(cena_narocila)
+    cur.execute("INSERT INTO narocila(id_narocnika, id_ponudbe, kolicina) VALUES((SELECT id FROM narocniki WHERE up_ime=%s), (SELECT id FROM ponudba WHERE vrsta=%s), %s)", (uporabnik, vrsta, kolicina))
+    #napaka = "Še enkrat preglejte Vaše naročilo"
+    #response.set_cookie('vrsta', vrsta, secret=skrivnost)
+    #response.set_cookie('kolicina', kolicina, secret=skrivnost)
+    #return template('povzetek_narocila.html',vrsta=vrsta, kolicina=kolicina, cena_narocila=cena_narocila, napaka=napaka)
+    nastaviSporocilo("{uporabnik}, vaše naročilo je bilo uspešno oddano. Skupna cena naročila znaša {cena_narocila} €".format(uporabnik=uporabnik, cena_narocila=cena_narocila))
+    redirect('/ponudba')
 
 def password_hash(s):
     """Vrni SHA-512 hash danega UTF-8 niza. Gesla vedno spravimo v bazo
@@ -314,9 +322,43 @@ def registracija_post():
         redirect(url('index'))
 
 
+@get('/dodaj_zaposlenega')
+def dodaj_zaposlenega_get():
+    napaka = None
+    return template('dodaj_zaposlenega.html', ime='', priimek='', placa='', rojstvo='', telefon='', uporabnisko_ime='', geslo1='', geslo2='', napaka = napaka)
+    #return template('registracija.html', napaka = napaka)
 
-
-
+@post('/dodaj_zaposlenega')
+def dodaj_zaposlenega_post():
+     ime = request.forms.ime
+     priimek = request.forms.priimek
+     placa = request.forms.placa
+     rojstvo = request.forms.rojstvo
+     telefon = request.forms.telefon
+     uporabnisko_ime = request.forms.uporabnisko_ime
+     geslo1 = request.forms.geslo1
+     geslo2 = request.forms.geslo2
+     print(placa)
+     print(rojstvo)
+     #jezekdotak=cur.execute("SELECT * FROM narocniki WHERE up_ime=%s", (uporabnisko_ime))
+     if preveri_za_narocnika(uporabnisko_ime) == False:
+        return template('dodaj_zaposlenega.html', ime=ime, priimek=priimek, placa=placa, rojstvo=rojstvo, telefon=telefon, uporabnisko_ime=uporabnisko_ime, geslo1=geslo1, geslo2=geslo2,
+         napaka='Restavracija že ima člana s tem uporabniškim imenom')
+     if geslo1 != geslo2:
+        return template('dodaj_zaposlenega.html', ime=ime, priimek=priimek, placa=placa, rojstvo=rojstvo, telefon=telefon, uporabnisko_ime=uporabnisko_ime, geslo1=geslo1, geslo2=geslo2,
+         napaka='Gesli se ne ujemata')
+     else:
+        try:
+            geslo = password_hash(geslo1)
+            cur.execute("INSERT INTO zaposleni (ime, priimek, telefon, placa, rojstvo, up_ime, geslo) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                        (ime, priimek, telefon, placa, rojstvo, uporabnisko_ime, geslo))
+            conn.commit()
+        except Exception as ex:
+            conn.rollback()
+            return template('dodaj_zaposlenega.html', ime=ime, priimek=priimek, placa=placa, rojstvo=rojstvo, telefon=telefon, uporabnisko_ime=uporabnisko_ime, geslo1=geslo1, geslo2=geslo2,
+                napaka='Zgodila se je napaka')
+        nastaviSporocilo('Nov član je bil uspešno dodan')
+        redirect(url('vodenje_restavracije'))
     
 ######################################################################
 # Glavni program
