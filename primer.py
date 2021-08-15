@@ -50,7 +50,7 @@ def index():
     cur.execute("SELECT vrsta, cena FROM ponudba")
     #hamburger = 'Hamburger'
     #cur.execute("SELECT vrsta, cena FROM ponudba WHERE vrsta=%s", (hamburger, ))
-    return template('ponudba.html', ponudba=cur, uporabnisko_ime='', geslo1='', napaka = napaka)
+    return template('uvodna_stran.html', ponudba=cur, uporabnisko_ime='', geslo1='', napaka = napaka)
 
 """ def hashGesla(s):
     m = hashlib.sha256()
