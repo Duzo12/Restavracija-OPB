@@ -1,0 +1,32 @@
+%rebase('osnova.html', naslov='Naročniki hrane')
+
+  <table cellpadding="0" cellspacing="0" border="1">
+  <tr>
+     <th>Id</th>
+     <th>Ime</th>
+     <th>Priimek</th>
+     <th>Naslov</th>
+     <th>Kraj</th>
+     <th>Telefon</th>
+     <th>Uporabniško ime</th>
+     <th>Geslo</th>
+     <th>Ponovite geslo</th>
+  </tr>
+  %for (id,ime,priimek,naslov,kraj,telefon,uporabnisko_ime,geslo1,geslo2) in narocnik:
+    <tr>
+       <td>{{id}}</td>
+       <td>{{ime}}</td>
+       <td>{{priimek}}</td>
+       <td>{{naslov}}</td>
+       <td>{{kraj}}</td>
+       <td>{{telefon}}</td>
+       <td>{{uporabnisko_ime}}</td>
+       <td>{{geslo1}}</td>
+       <td>{{geslo2}}</td>
+    </tr>
+  %end
+  </table>
+
+  <p>
+   <a href="{{url('registracija', x=1000)}}">Registracija</a>
+   </p>

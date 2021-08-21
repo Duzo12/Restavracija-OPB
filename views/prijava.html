@@ -1,0 +1,21 @@
+%rebase('osnova.html', naslov='Prijava uporabnik')
+
+%if napaka:
+  <p class="opozorilo">{{napaka}}</p>
+%end
+
+<br> 
+<p>
+  <a href="{{url('dodaj_ponudbo', x=1000)}}" class="button is-danger is-rounded is-light">Dodaj v ponudbo</a>
+ 
+  
+
+  <a href="{{url('povecaj_zalogo', x=1000)}}" class="button is-danger is-rounded is-light">Povecaj zalogo</a>
+
+
+  <a href="{{url('oddaj_narocilo', x=1000)}}" class="button is-danger is-rounded is-light">Oddaj naročilo</a>
+
+
+  <a href="{{url('spremeni_placo', x=1000)}}" class="button is-danger is-rounded is-light">Spremeni plačo</a>
+</p>
+
