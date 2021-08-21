@@ -230,7 +230,7 @@ def registracija_post():
             #nastaviSporocilo('Zgodila se je napaka') 
             #redirect('/registracija')
         nastaviSporocilo('Registracija uspešna. Lahko se prijavite.')
-        redirect(url('index'))
+        redirect(url('oddaj_narocilo'))
 
 
 
