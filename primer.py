@@ -255,6 +255,11 @@ def prijava():
                     uporabnisko_ime='', 
                     geslo1='')
 
+@get('\odjava')
+def odjava_get():
+    response.delte_cookie('username', path="/")
+    redirect(url('index'))
+
 #@post('/prijava')
 #def prijava_post():
 #    #poberimo vnesene podatke
