@@ -46,10 +46,17 @@ def static(filename):
 
 @get('/')
 def index():
-    nastaviSporocilo('Pozdravljeni v Duzo Restavracija. V kolikor še niste naš član se prosim registrirajte.')
+    nastaviSporocilo('Pozdravljeni v Restavraciji Trio Adijo. V kolikor še niste naš član, se prosim registrirajte.')
     napaka = request.get_cookie('sporocilo', secret=skrivnost)
     return template('zacetna_stran.html', uporabnisko_ime='', geslo='', napaka = napaka)
 
+@get('/odpriponudbo')
+def odpri_ponudbo():
+    napaka = request.get_cookie('sporocilo', secret=skrivnost)
+    cur.execute("SELECT vrsta, cena FROM ponudba WHERE zaloga > 0")
+    ponudba=cur.fetchall() 
+    return template('ponudba.html', ponudba=ponudba, kolicina='', napaka = napaka)
+   
 
 @post('/')
 def prijava():
@@ -118,7 +125,7 @@ def odjava():
 @get('/ponudba')
 def ponudba():
     uporabnik = request.get_cookie('uporabnik', secret=skrivnost)
-    nastaviSporocilo("{0} pozdravljen! Preglej našo današnjo ponudbo in če želiš, oddaj naročilo.".format(uporabnik))
+    nastaviSporocilo("{0} Pozdravljeni! Preglej današnjo ponudbo in oddaj naročilo.".format(uporabnik))
     napaka = request.get_cookie('sporocilo', secret=skrivnost)
     nastaviSporocilo()
     cur.execute("SELECT vrsta, cena FROM ponudba WHERE zaloga > 0")
@@ -126,10 +133,31 @@ def ponudba():
     #return template('ponudba3.html', ponudba=cur, napaka = napaka)
     return template('ponudba4.html', ponudba=ponudba, kolicina='', napaka = napaka)
 
+@post('/ponudba')
+def narocilo():
+    uporabnik = request.get_cookie('uporabnik', secret=skrivnost)
+    vrsta = request.forms.vrsta_zaloge
+    kolicina = request.forms.kolicina
+    if kolicina=='':
+        nastaviSporocilo('Naročite lahko minimalno eno jed. Prosim izpolnite polje kolicina')
+        redirect('/ponudba')
+    print(vrsta)
+    print(kolicina)
+    cur.execute("SELECT cena FROM ponudba WHERE vrsta = %s", (vrsta, ))
+    cena_jedi = cur.fetchone()[0]
+    #print(cena_izdelka)
+    cena_narocila = float(cena_jedi) * int(kolicina)
+    print(cena_narocila)
+    cur.execute("INSERT INTO narocila(id_narocnika, id_ponudbe, kolicina) VALUES((SELECT id FROM narocniki WHERE up_ime=%s), (SELECT id FROM ponudba WHERE vrsta=%s), %s)", (uporabnik, vrsta, kolicina))
+    #napaka = "Še enkrat preglejte Vaše naročilo"
+    #response.set_cookie('vrsta', vrsta, secret=skrivnost)
+    #response.set_cookie('kolicina', kolicina, secret=skrivnost)
+    #return template('povzetek_narocila.html',vrsta=vrsta, kolicina=kolicina, cena_narocila=cena_narocila, napaka=napaka)
+    nastaviSporocilo("{uporabnik}, vaše naročilo je bilo uspešno oddano. Skupna cena naročila znaša {cena_narocila} €".format(uporabnik=uporabnik, cena_narocila=cena_narocila))
+    redirect('/ponudba')
 
 #@post('/ponudba')
 #def narocilo():
-
 
 @get('/vodenje_restavracija')
 def vodenje_restavracije():
@@ -229,28 +257,6 @@ def oddaj_narocilo():
         napaka='Zgodila se je napaka: %s' % ex)
     redirect(url('indeks'))
 
-@post('/ponudba')
-def narocilo():
-    uporabnik = request.get_cookie('uporabnik', secret=skrivnost)
-    vrsta = request.forms.vrsta_zaloge
-    kolicina = request.forms.kolicina
-    if kolicina=='':
-        nastaviSporocilo('Naročite lahko minimalno eno jed. Prosim izpolnite polje kolicina')
-        redirect('/ponudba')
-    print(vrsta)
-    print(kolicina)
-    cur.execute("SELECT cena FROM ponudba WHERE vrsta = %s", (vrsta, ))
-    cena_jedi = cur.fetchone()[0]
-    #print(cena_izdelka)
-    cena_narocila = float(cena_jedi) * int(kolicina)
-    print(cena_narocila)
-    cur.execute("INSERT INTO narocila(id_narocnika, id_ponudbe, kolicina) VALUES((SELECT id FROM narocniki WHERE up_ime=%s), (SELECT id FROM ponudba WHERE vrsta=%s), %s)", (uporabnik, vrsta, kolicina))
-    #napaka = "Še enkrat preglejte Vaše naročilo"
-    #response.set_cookie('vrsta', vrsta, secret=skrivnost)
-    #response.set_cookie('kolicina', kolicina, secret=skrivnost)
-    #return template('povzetek_narocila.html',vrsta=vrsta, kolicina=kolicina, cena_narocila=cena_narocila, napaka=napaka)
-    nastaviSporocilo("{uporabnik}, vaše naročilo je bilo uspešno oddano. Skupna cena naročila znaša {cena_narocila} €".format(uporabnik=uporabnik, cena_narocila=cena_narocila))
-    redirect('/ponudba')
 
 def password_hash(s):
     """Vrni SHA-512 hash danega UTF-8 niza. Gesla vedno spravimo v bazo
