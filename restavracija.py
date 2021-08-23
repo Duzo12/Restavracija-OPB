@@ -148,7 +148,7 @@ def narocilo():
     #print(cena_izdelka)
     cena_narocila = float(cena_jedi) * int(kolicina)
     print(cena_narocila)
-    cur.execute("INSERT INTO narocila(id_narocnika, id_ponudbe, kolicina) VALUES((SELECT id FROM narocniki WHERE up_ime=%s), (SELECT id FROM ponudba WHERE vrsta=%s), %s)", (uporabnik, vrsta, kolicina))
+    cur.execute("INSERT INTO narocila (id_narocnika, id_ponudbe, kolicina) VALUES ((SELECT id FROM narocniki WHERE up_ime=%s), (SELECT id FROM ponudba WHERE vrsta=%s), %s)", (uporabnik, vrsta, kolicina))
     #napaka = "Še enkrat preglejte Vaše naročilo"
     #response.set_cookie('vrsta', vrsta, secret=skrivnost)
     #response.set_cookie('kolicina', kolicina, secret=skrivnost)
