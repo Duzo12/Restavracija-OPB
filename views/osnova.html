@@ -1,14 +1,25 @@
-<html>
-<head>
-  <title>{{naslov}}</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
-  <!-- <link href="{{url('static', filename='style.css')}}" rel="stylesheet"> -->
-</head>
-<body style="background-color:#ffc400;">
- <center> 
-  <h1 class=title style="color:blue;height:60px;">{{naslov}}</h2>
-  <hr style="height:2px;border-width:0;color:red;background-color: red;">
- 
+<!doctype html>
+<html lang="sl">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <title>{{naslov}}</title>
+        <script src="{{url('static', filename='knjiznica.js')}}"></script>  <!-- povezava na javascript-->
+    </head>
+<center>
+<body style="background-color:#FFFFFF;">
+          <!-- orodna vrstica-->
+          <nav class="navbar navbar-light" style="background-color: #2171bd;">
+            <div class="container">
+              <a href="{{url('index')}}" class="text-dark"><h2>Restavracija Trio Adijo</h2></a>
+              <a href="{{url('odpri_ponudbo')}}" class="text-dark">Ponudba</a>
+              <a href="{{url('odjava')}}" class="text-dark">Odjava</a>
+            </div>                
+        </nav>
 {{!base}}
 </center> 
 </body>
