@@ -3,13 +3,12 @@
 * [![bottle.py](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jaanos/OPB-bottle/master?urlpath=proxy/8080/) Aplikacija `bottle.py`
 * [![Jupyter](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jaanos/OPB-bottle/master) Jupyter
 
-
-Ta repozitorij vsebuje minimalen primer spletne aplikacije z ogrodjem [`bottle.py`](https://bottlepy.org/docs/dev/) in povezavo na podatkovno bazo [PostgreSQL](https://www.postgresql.org/) za potrebe predmeta [Osnove podatkovnih baz](https://github.com/jaanos/OPB).
+# Restavracija Trio Adijo
 
 
 ## ER diagram
 
-![ER diagram](banka.png)
+![ER diagram](diagram2.png)
 
 ## Aplikacija
 
