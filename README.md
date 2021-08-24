@@ -8,7 +8,7 @@
 
 ## ER diagram
 
-![ER diagram](Diagram2.png)
+![ER diagram](Diagram1.png)
 
 ## Aplikacija
 Aplikacija je sestavljena tako, da jo poženemo s primer.py.
