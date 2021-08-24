@@ -8,7 +8,7 @@
 
 ## ER diagram
 
-![ER diagram](diagram2.png)
+![ER diagram](Diagram2.png)
 
 ## Aplikacija
 
