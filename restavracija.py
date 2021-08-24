@@ -56,6 +56,13 @@ def odpri_ponudbo():
     cur.execute("SELECT vrsta, cena FROM ponudba WHERE zaloga > 0")
     ponudba=cur.fetchall() 
     return template('ponudba.html', ponudba=ponudba, kolicina='', napaka = napaka)
+
+@get('/odprinarocilo')
+def odpri_narocilo():
+    uporabnik = request.get_cookie('uporabnik', secret=skrivnost)
+    cur.execute("SELECT id_ponudbe, kolicina FROM narocila")
+    narocila=cur.fetchall() 
+    return template('povzetek_narocila.html', narocila=narocila)
    
 
 @post('/')
@@ -148,7 +155,11 @@ def narocilo():
     #print(cena_izdelka)
     cena_narocila = float(cena_jedi) * int(kolicina)
     print(cena_narocila)
-    cur.execute("INSERT INTO narocila (id_narocnika, id_ponudbe, kolicina) VALUES ((SELECT id FROM narocniki WHERE up_ime=%s), (SELECT id FROM ponudba WHERE vrsta=%s), %s)", (uporabnik, vrsta, kolicina))
+    try:
+        cur.execute("INSERT INTO narocila (id_narocnika, id_ponudbe, kolicina) VALUES ((SELECT id FROM narocniki WHERE up_ime=%s), (SELECT id FROM ponudba WHERE vrsta=%s), %s)", (uporabnik, vrsta, kolicina))
+        conn.commit()  
+    except Exception as ex:
+        conn.rollback() 
     #napaka = "Še enkrat preglejte Vaše naročilo"
     #response.set_cookie('vrsta', vrsta, secret=skrivnost)
     #response.set_cookie('kolicina', kolicina, secret=skrivnost)

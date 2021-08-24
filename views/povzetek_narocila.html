@@ -1,27 +1,14 @@
 %rebase('osnova.html', naslov='Povzetek narocila')
 
-%if napaka:
-  <p class="opozorilo">{{napaka}}</p>
-%end
-
-<table cellpadding="0" cellspacing="0" border="0">
+<table cellpadding="0" cellspacing="0" border="1" class="table" width="90%" align="center">
+  <tr>
+    <th>Hrana</th>
+    <th>Količina</th>
+  </tr>
+  %for (id_ponudbe, kolicina) in narocila:
     <tr>
-      <th>
-        <table cellpadding="0" cellspacing="0" border="1" class="table" width="90%" align="center">
-        <tr>
-          <th>Hrana</th>
-          <th>Kolicina</th>
-          <th>Skupna cena naročila</th>
-        </tr>
-        <tr>
-            <td>{{vrsta}}</td>
-            <td>{{kolicina}}</td>
-            <td>{{"{0} €".format(cena_narocila)}}</td>
-        </tr>
-        </table>
-      </th>
+      <td>{{id_ponudbe}}</td>
+      <td>{{kolicina}}</td>
     </tr>
-    </table>
-
-<a href="{{url('ponudba')}}" class="button is-danger is-rounded is-light">Prekliči naročilo</a>
-
+  %end
+  </table>
