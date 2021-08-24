@@ -1,37 +1,21 @@
 # Primer spletne aplikacije z `bottle.py`
 
-* [![bottle.py](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jaanos/OPB-bottle/master?urlpath=proxy/8080/) Aplikacija `bottle.py`
-* [![Jupyter](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jaanos/OPB-bottle/master) Jupyter
+* [![bottle.py](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Duzo12/Restavracija-OPB/main?urlpath=proxy/8080/) Aplikacija `bottle.py`
 
-
-Ta repozitorij vsebuje minimalen primer spletne aplikacije z ogrodjem [`bottle.py`](https://bottlepy.org/docs/dev/) in povezavo na podatkovno bazo [PostgreSQL](https://www.postgresql.org/) za potrebe predmeta [Osnove podatkovnih baz](https://github.com/jaanos/OPB).
+# Restavracija Trio Adijo
 
 
 ## ER diagram
 
-![ER diagram](banka.png)
+![ER diagram](Diagram1.png)
 
 ## Aplikacija
+Aplikacija je sestavljena tako, da jo poženemo z restavracija.py.
 
-Aplikacijo zaženemo tako, da poženemo program [`primer.py`](primer.py), npr.
-```bash
-python primer.py
-```
-Za delovanje je potrebno še sledeče:
-* [`auth_public.py`](auth_public.py) - podatki za prijavo na bazo
-* [`bottle.py`](bottle.py) - knjižnica za spletni strežnik
-* [`bottleext.py`](bottleext.py) - dopolnitve knjižnice `bottle.py` za lažje delo
-* [`static/`](static/) - mapa s statičnimi datotekami
-* [`views/`](views/) - mapa s predlogami
+Na začetku se nam odpre uvodna stran, na kateri lahko opazimo sliko restavracije in polja za prijavo ter registracijo. Po uspešni prijavi ali registraciji vstopimo v spletno aplikacijo kot uporabnik spletne restavracije, kjer lahko opazimo ponudbo, ki jo restavracija ponuja, in kjer lahko oddamo naročilo. Po uspešno oddanem naročilo, se izpiše znesek naročila, da vemo koliko bo potrebno plačati. Ustvarili pa smo tudi lastnika restavracije (uporabniško ime: nejcduscak, geslo: geslo), kateri ima možnost:
+- spremeniti plačo svojim zaposlenim,
+- dodajanja nove ponudbe v že obstoječo,
+- zaposliti in zapisati v mapo novega zaposlenega
+- povečati zalogo posamezne ponudbe.
+S tem je naša aplikacija zaključena in omogoča prijetno izkušnjo naročanja hrane.
 
-
-## Binder
-
-Aplikacijo je mogoče poganjati tudi na spletu z orodjem [Binder](https://mybinder.org/). V ta namen so v mapi [`binder/`](binder/) še sledeče datoteke:
-* [`requirements.txt`](binder/requirements.txt) - seznam potrebnih Pythonovih paketov za namestitev s [`pip`](https://pypi.org/project/pip/)
-* [`postBuild`](binder/postBuild) - skripta, ki se požene po namestitvi paketov in poskrbi za nastavitev posrednika za spletni strežnik
-* [`start`](binder/start) - skripta za zagon aplikacije (spremenljivka `BOTTLE_RUNTIME` poda ime glavnega programa)
-
-Zaradi omejitev javne storitve [Binder](https://mybinder.org/) se povezava z bazo vzpostavi na vratih 443 (namesto običajnih 5432), za kar je bila potrebna posebna nastavitev strežnika.
-
-Zgornje skripte je možno prilagoditi tudi za druga ogrodja, kot npr. [Flask](https://palletsprojects.com/p/flask/) ali [Django](https://www.djangoproject.com/).
