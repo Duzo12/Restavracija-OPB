@@ -10,7 +10,7 @@
 ![ER diagram](Diagram1.png)
 
 ## Aplikacija
-Aplikacija je sestavljena tako, da jo poženemo s primer.py.
+Aplikacija je sestavljena tako, da jo poženemo z restavracija.py.
 
 Na začetku se nam odpre uvodna stran, na kateri lahko opazimo sliko restavracije in polja za prijavo ter registracijo. Po uspešni prijavi ali registraciji vstopimo v spletno aplikacijo kot uporabnik spletne restavracije, kjer lahko opazimo ponudbo, ki jo restavracija ponuja, in kjer lahko oddamo naročilo. Po uspešno oddanem naročilo, se izpiše znesek naročila, da vemo koliko bo potrebno plačati. Ustvarili pa smo tudi lastnika restavracije (uporabniško ime: nejcduscak, geslo: geslo), kateri ima možnost:
 - spremeniti plačo svojim zaposlenim,
