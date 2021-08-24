@@ -1,6 +1,6 @@
 # Primer spletne aplikacije z `bottle.py`
 
-* [![bottle.py](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Duzo12/Restavracija_OPB/master?urlpath=proxy/8080/) Aplikacija `bottle.py`
+* [![bottle.py](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Duzo12/Restavracija_OPB/main?urlpath=proxy/8080/) Aplikacija `bottle.py`
 
 # Restavracija Trio Adijo
 
