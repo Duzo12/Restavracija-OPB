@@ -1,7 +1,6 @@
 # Primer spletne aplikacije z `bottle.py`
 
 * [![bottle.py](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jaanos/OPB-bottle/master?urlpath=proxy/8080/) Aplikacija `bottle.py`
-* [![Jupyter](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jaanos/OPB-bottle/master) Jupyter
 
 # Restavracija Trio Adijo
 
