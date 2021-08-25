@@ -1,8 +1,9 @@
+print('SERVER SE JE ZAGNAL')
 #!/usr/bin/python
 # -*- encoding: utf-8 -*-
 
 # uvozimo bottle.py
-from bottle import debug
+from bottle import debug, route
 from bottleext import get, post, run, request, template, redirect, static_file, url, response
 
 # uvozimo ustrezne podatke za povezavo
@@ -39,39 +40,142 @@ def nastaviSporocilo(sporocilo = None):
 # Mapa za statične vire (slike, css, ...)
 static_dir = "./static"
 
-
-@get('/static/<filename:path>')
+@route("/static/<filename:path>")
 def static(filename):
-     return static_file(filename, root='static')
+    return static_file(filename, root=static_dir)
 
 @get('/')
 def index():
+    nastaviSporocilo('Pozdravljeni v Restavraciji Trio Adijo. V kolikor še niste naš član, se prosim registrirajte.')
     napaka = request.get_cookie('sporocilo', secret=skrivnost)
-    cur.execute("SELECT vrsta, cena FROM ponudba")
-    #hamburger = 'Hamburger'
-    #cur.execute("SELECT vrsta, cena FROM ponudba WHERE vrsta=%s", (hamburger, ))
-    return template('ponudba.html', ponudba=cur, uporabnisko_ime='', geslo1='', napaka = napaka)
+    return template('zacetna_stran.html', uporabnisko_ime='', geslo='', napaka = napaka)
 
-""" def hashGesla(s):
-    m = hashlib.sha256()
-    m.update(s.encode("utf-8"))
-    return m.hexdigest()
+@get('/odpriponudbo')
+def odpri_ponudbo():
+    napaka = request.get_cookie('sporocilo', secret=skrivnost)
+    cur.execute("SELECT vrsta, cena FROM ponudba WHERE zaloga > 0")
+    ponudba=cur.fetchall() 
+    return template('ponudba.html', ponudba=ponudba, kolicina='', napaka = napaka)
 
-def preveri_uporabnika(uporabnisko_ime, geslo1):
-    try:
-        cur.execute("SELECT * FROM prijava WHERE uporabnik = %s", (uporabnisko_ime, ))
-        id,uporabnisko_ime,geslo1,ime,priimek = cur.fetchone()
-        salt = geslo1[:64]
-        geslo1 = geslo1[64:]
-        pwdhash = hashlib.pbkdf2_hmac('sha512', 
-                                  geslo1.encode('utf-8'), 
-                                  salt.encode('ascii'), 
-                                  100000)
-        pwdhash = binascii.hexlify(pwdhash).decode('ascii')
-        if pwdhash == geslo1:
-            return [ime]
+@get('/odprinarocilo')
+def odpri_narocilo():
+    uporabnik = request.get_cookie('uporabnik', secret=skrivnost)
+    cur.execute("SELECT id_ponudbe, kolicina FROM narocila")
+    narocila=cur.fetchall() 
+    return template('povzetek_narocila.html', narocila=narocila)
+   
+
+@post('/')
+def prijava():
+    uporabnik = request.forms.uporabnisko_ime
+    geslo = request.forms.geslo
+    #print(uporabnik)
+    #print(geslo)
+    if uporabnik == '' or geslo == '':
+        #print('podatki manjkajo')
+        nastaviSporocilo('Uporabniško ima in geslo morata biti neprazna') 
+        redirect('/')
+        return
+    hashBaza_zaposlen = None
+    hashBaza_narocnik = None
+    try: 
+        cur.execute("SELECT geslo FROM zaposleni WHERE up_ime = %s", (uporabnik, ))
+        hashBaza_zaposlen = cur.fetchone()[0]
+        #print(hashBaza_zaposlen)
     except:
-        return False """
+        hashBaza_zaposlen = None
+    try:
+        cur.execute("SELECT geslo FROM narocniki WHERE up_ime = %s", (uporabnik, ))
+        hashBaza_narocnik = cur.fetchone()[0]
+        #print(hashBaza_narocnik)
+    except:
+        hashBaza_narocnik = None
+    #print(hashBaza_zaposlen)
+    #print(hashBaza_narocnik)
+    if hashBaza_narocnik is None and hashBaza_zaposlen is None:
+        #print('ne obstaja niti narocnik, niti zaposlen')
+        nastaviSporocilo('Uporabniško ime ali geslo ni ustrezno') 
+        redirect('/')
+        return
+    if hashBaza_zaposlen is None:
+        #print('zaposlen is None')
+        if password_hash(geslo) != hashBaza_narocnik:
+            print('geslo narocnik se ne ujema')
+            nastaviSporocilo('Uporabniško ime ali geslo ni ustrezno') 
+            redirect('/')
+            return
+        #print('narocnika smo uspesno prijavili')
+        response.set_cookie('uporabnik', uporabnik, secret=skrivnost)
+        nastaviSporocilo("{0} pozdravljen! Preglej našo današnjo ponudbo in če želiš, oddaj naročilo.".format(uporabnik))
+        redirect('/ponudba')
+    #if hashBaza_narocnik is not None:
+    #        nastaviSporocilo('Uporabniško geslo ali ime nista ustrezni') 
+    #        redirect('/')
+    #        return
+    if password_hash(geslo) != hashBaza_zaposlen:
+        #print('geslo zaposlen se ne ujema')
+        nastaviSporocilo('Uporabniško ime ali geslo ni ustrezno') 
+        redirect('/')
+        return
+    response.set_cookie('uporabnik', uporabnik, secret=skrivnost)
+    #print('zaposlenega smo uspešno prijavili')
+    nastaviSporocilo("{0} pozdravljen!".format(uporabnik))
+    redirect('/vodenje_restavracija')
+
+@get('/odjava')
+def odjava():
+    response.delete_cookie('uporabnik')
+    nastaviSporocilo('Odjava uspešna. Lep pozdrav in nasvidenje.')
+    redirect('/')
+
+
+@get('/ponudba')
+def ponudba():
+    uporabnik = request.get_cookie('uporabnik', secret=skrivnost)
+    nastaviSporocilo("{0} Pozdravljeni! Preglej današnjo ponudbo in oddaj naročilo.".format(uporabnik))
+    napaka = request.get_cookie('sporocilo', secret=skrivnost)
+    nastaviSporocilo()
+    cur.execute("SELECT vrsta, cena FROM ponudba WHERE zaloga > 0")
+    ponudba=cur.fetchall()
+    #return template('ponudba3.html', ponudba=cur, napaka = napaka)
+    return template('ponudba4.html', ponudba=ponudba, kolicina='', napaka = napaka)
+
+@post('/ponudba')
+def narocilo():
+    uporabnik = request.get_cookie('uporabnik', secret=skrivnost)
+    vrsta = request.forms.vrsta_zaloge
+    kolicina = request.forms.kolicina
+    if kolicina=='':
+        nastaviSporocilo('Naročite lahko minimalno eno jed. Prosim izpolnite polje kolicina')
+        redirect('/ponudba')
+    print(vrsta)
+    print(kolicina)
+    cur.execute("SELECT cena FROM ponudba WHERE vrsta = %s", (vrsta, ))
+    cena_jedi = cur.fetchone()[0]
+    #print(cena_izdelka)
+    cena_narocila = float(cena_jedi) * int(kolicina)
+    print(cena_narocila)
+    try:
+        cur.execute("INSERT INTO narocila (id_narocnika, id_ponudbe, kolicina) VALUES ((SELECT id FROM narocniki WHERE up_ime=%s), (SELECT id FROM ponudba WHERE vrsta=%s), %s)", (uporabnik, vrsta, kolicina))
+        conn.commit()  
+    except Exception as ex:
+        conn.rollback() 
+    #napaka = "Še enkrat preglejte Vaše naročilo"
+    #response.set_cookie('vrsta', vrsta, secret=skrivnost)
+    #response.set_cookie('kolicina', kolicina, secret=skrivnost)
+    #return template('povzetek_narocila.html',vrsta=vrsta, kolicina=kolicina, cena_narocila=cena_narocila, napaka=napaka)
+    nastaviSporocilo("{uporabnik}, vaše naročilo je bilo uspešno oddano. Skupna cena naročila znaša {cena_narocila} €".format(uporabnik=uporabnik, cena_narocila=cena_narocila))
+    redirect('/ponudba')
+
+#@post('/ponudba')
+#def narocilo():
+
+@get('/vodenje_restavracija')
+def vodenje_restavracije():
+    uporabnik = request.get_cookie('uporabnik', secret=skrivnost)
+    napaka = request.get_cookie('sporocilo', secret=skrivnost)
+    return template('vodenje_restavracije.html', napaka = napaka)
+
 
 @get('/dodaj_ponudbo')
 def dodaj_ponudbo():
@@ -90,7 +194,8 @@ def dodaj_ponudbo_post():
         conn.rollback()
         return template('ponudba2.html', vrsta=vrsta, cena=cena, zaloga=zaloga,
             napaka='Zgodila se je napaka: %s' % ex)
-    redirect(url('index'))
+    nastaviSporocilo("V ponudbo je bilo uspešno dodano {zaloga} {vrsta}, cena bo {cena} €.". format(vrsta=vrsta, cena=cena, zaloga=zaloga))
+    redirect(url('vodenje_restavracije'))
 
 @get('/povecaj_zalogo')
 def povecaj_zalogo():
@@ -106,19 +211,20 @@ def povecaj_zalogo_post():
     #zaloga_dodana = request.forms.zaloga_dodana
     id = request.forms.vrsta_zaloge
     zaloga_dodana = request.forms.kolicina_nove_zaloge
+    #print(id)
+    #print(zaloga_dodana)
     try:
         #cur.execute("UPDATE ponudba SET zaloga = zaloga + %s WHERE id = %s",(int(zaloga_dodana), int(id)))
         cur.execute("UPDATE ponudba SET zaloga = zaloga + %s WHERE vrsta = %s",(int(zaloga_dodana), id))
         conn.commit()
     except Exception as ex:
         conn.rollback()
-        #return template('povecaj_zalogo.html', id='', zaloga_dodana='',
-        #napaka='Zgodila se je napaka: %s' % ex)
         cur.execute("SELECT vrsta FROM ponudba")
         ponudba = cur.fetchall()
         return template('povecaj_zalogo2.html', ponudba=ponudba, vrsta_zaloge='', kolicina_nove_zaloge='',
         napaka='Zgodila se je napaka: %s' % ex)
-    redirect(url('index'))
+    nastaviSporocilo("Število zaloge za {id} se je uspešno povečalo za {zaloga_dodana}.".format(id=id, zaloga_dodana=zaloga_dodana))
+    redirect(url('vodenje_restavracije'))
 
 @get('/spremeni_placo')
 def spremeni_placo():
@@ -137,7 +243,7 @@ def spremeni_placo_post():
         return template('spremeni_placo.html', id='', spremeni_placo='',
         napaka='Zgodila se je napaka: %s' % ex)
 
-    redirect(url('index'))
+    redirect(url('vodenje_restavracije'))
 
 
 @get('/oddaj_narocilo')
@@ -212,8 +318,8 @@ def registracija_post():
      if geslo1 != geslo2:
         return template('registracija.html', ime=ime, priimek=priimek, kraj=kraj, naslov=naslov, telefon=telefon, uporabnisko_ime=uporabnisko_ime, geslo1=geslo1, geslo2=geslo2,
             napaka='Gesli se ne ujemata')
-        return template('registracija.html', ime='', priimek='', kraj='', naslov='', telefon='', uporabnisko_ime='', geslo1='', geslo2='',
-            napaka = 'Gesli se ne ujemata')
+        #return template('registracija.html', ime='', priimek='', kraj='', naslov='', telefon='', uporabnisko_ime='', geslo1='', geslo2='',
+        #    napaka = 'Gesli se ne ujemata')
         #nastaviSporocilo('Gesli se ne ujemata') 
         #redirect('/registracija')
      else:
@@ -233,108 +339,43 @@ def registracija_post():
         redirect(url('index'))
 
 
+@get('/dodaj_zaposlenega')
+def dodaj_zaposlenega_get():
+    napaka = None
+    return template('dodaj_zaposlenega.html', ime='', priimek='', placa='', rojstvo='', telefon='', uporabnisko_ime='', geslo1='', geslo2='', napaka = napaka)
+    #return template('registracija.html', napaka = napaka)
 
-def javiNapaka(napaka = None):
-    sporocilo = request.get_cookie('napaka', secret=skrivnost)
-    #if napaka is None:
-        #response.delete_cookie('napaka')
-    #else:
-        #path doloca za katere domene naj bo napaka, default je cela domena
-        #response.set_cookie('napaka', napaka, path="/", secret=skrivnost)
-    return sporocilo
-
-@get('/prijava')
-def prijava():
-    
-    napaka = javiNapaka()
-    #uporabnisko_ime = request.get_cookie("uporabnisko_ime", secret=skrivnost)
-
-    return template('prijava.html', 
-                    naslov='Prijava', 
-                    napaka=napaka,
-                    uporabnisko_ime='', 
-                    geslo1='')
-
-#@post('/prijava')
-#def prijava_post():
-#    #poberimo vnesene podatke
-#    uporabnisko_ime = request.forms.uporabnisko_ime
-#    geslo1 = request.forms.geslo1
-#    
-#    hashGeslo = None
-#    try: 
-#        ukaz = ("SELECT geslo FROM narocniki WHERE uporabnisko_ime = (%s)")
-#        cur.execute(ukaz, (uporabnisko_ime,))
-#        hashGeslo = cur.fetchone()
-#        hashGeslo = hashGeslo[0]
-#    except:
-#        hashGeslo = None
-#    if hashGeslo is None:
-#        javiNapaka('Niste še registrirani')
-#        redirect('{0}prijava'.format(ROOT))
-#        return
-#    if hashGesla(geslo1) != hashGeslo:
-#        javiNapaka('Geslo ni pravilno')
-#        redirect('{0}prijava'.format(ROOT))
-#        return
-#    #response.set_cookie('uporabnisko_ime', uporabnisko_ime, secret=skrivnost)
-#    #return template('uporabnik.html', uporabnisko_ime=uporabnisko_ime, geslo1=geslo1,
-#                #napaka='Zgodila se je napaka: %s' % ex)
-#    redirect(url('registracija'))
-
-""" @get('/prijava')
-def prijava():
-    return template('prijava.html', ime='', priimek='', kraj='', naslov='', telefon='', uporabnisko_ime='', geslo1='', geslo2='', napaka = None)
-
-@post('/prijava')
-def prijava_post():
-    uporabnisko_ime = request.forms.uporabnisko_ime
-    geslo1 = request.forms.geslo1
-    preveri = preveri_uporabnika(uporabnisko_ime, geslo1)
-    if preveri:
-        ime, status = preveri
-        cur.execute("SELECT id FROM prijava WHERE ime LIKE %s", (ime,))
-        ID = cur.fetchall()
-        ID = ID[0][0]
-        #response.set_cookie('id', ID, secret=skrivnost)
-        #response.set_cookie('account', ime, secret=skrivnost)
-        #response.set_cookie('username', uporabnisko_ime, secret=skrivnost)
-        #response.delete_cookie('napaka')
-        #response.set_cookie('dovoljenje', status, secret=skrivnost)
-        return template('uporabnik.html')
-    else:
-        napaka = 'Uporabniško ime in geslo se ne ujemata'
-        #response.set_cookie('napaka', napaka, secret=skrivnost) """
-        
-#213
-
-""" @post('/prijava')
-def prijava_post():
-    uporabnisko_ime = request.forms.uporabnisko_ime
-    geslo = request.forms.geslo
-    if uporabnisko_ime is None or geslo is None:
-        print('Uporabniško ima in geslo morata biti neprazna') 
-        redirect('/prijava')
-        return
-    cur = baza.cursor()    
-    hashBaza = None
-    try: 
-        hashBaza = cur.execute("SELECT geslo FROM narocnik WHERE uporabnisko_ime = ?", (uporabnisko_ime, )).fetchone()
-        hashBaza = hashBaza[0]
-    except:
-        hashBaza = None
-    if hashBaza is None:
-        print('Uporabniško geslo ali ime nista ustrezni') 
-        redirect('/prijava')
-        return
-    if hashGesla(geslo) != hashBaza:
-        print('Uporabniško geslo ali ime nista ustrezni') 
-        redirect('/prijava')
-        return
-    #response.set_cookie('uporabnisko_ime', uporabnisko_ime) #, secret=skrivnost
-    redirect('/uporabnik')
- """
-    
+@post('/dodaj_zaposlenega')
+def dodaj_zaposlenega_post():
+     ime = request.forms.ime
+     priimek = request.forms.priimek
+     placa = request.forms.placa
+     rojstvo = request.forms.rojstvo
+     telefon = request.forms.telefon
+     uporabnisko_ime = request.forms.uporabnisko_ime
+     geslo1 = request.forms.geslo1
+     geslo2 = request.forms.geslo2
+     print(placa)
+     print(rojstvo)
+     #jezekdotak=cur.execute("SELECT * FROM narocniki WHERE up_ime=%s", (uporabnisko_ime))
+     if preveri_za_narocnika(uporabnisko_ime) == False:
+        return template('dodaj_zaposlenega.html', ime=ime, priimek=priimek, placa=placa, rojstvo=rojstvo, telefon=telefon, uporabnisko_ime=uporabnisko_ime, geslo1=geslo1, geslo2=geslo2,
+         napaka='Restavracija že ima člana s tem uporabniškim imenom')
+     if geslo1 != geslo2:
+        return template('dodaj_zaposlenega.html', ime=ime, priimek=priimek, placa=placa, rojstvo=rojstvo, telefon=telefon, uporabnisko_ime=uporabnisko_ime, geslo1=geslo1, geslo2=geslo2,
+         napaka='Gesli se ne ujemata')
+     else:
+        try:
+            geslo = password_hash(geslo1)
+            cur.execute("INSERT INTO zaposleni (ime, priimek, telefon, placa, rojstvo, up_ime, geslo) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                        (ime, priimek, telefon, placa, rojstvo, uporabnisko_ime, geslo))
+            conn.commit()
+        except Exception as ex:
+            conn.rollback()
+            return template('dodaj_zaposlenega.html', ime=ime, priimek=priimek, placa=placa, rojstvo=rojstvo, telefon=telefon, uporabnisko_ime=uporabnisko_ime, geslo1=geslo1, geslo2=geslo2,
+                napaka='Zgodila se je napaka')
+        nastaviSporocilo('Nov član je bil uspešno dodan')
+        redirect(url('vodenje_restavracije'))
     
 ######################################################################
 # Glavni program

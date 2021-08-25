@@ -1,57 +1,15 @@
 %rebase('osnova.html', naslov='Ponudba')
-  <header>  
-    
-  </header>
-  <table cellpadding="0" cellspacing="0" border="0">
+
+<table cellpadding="0" cellspacing="0" border="1" class="table" width="90%" align="center">
   <tr>
-    <th>
-      <img src="https://github.com/Duzo12/Restavracija-OPB/blob/main/views/Slike/dostava.jpg?raw=true.jpg" alt="Dostava hrane" width=400> 
-    </th>
-    <th>
-      <table cellpadding="0" cellspacing="0" border="1" class="table" width="90%" align="center">
-      <tr>
-        <th>Hrana</th>
-        <th>Cena v evrih</th>
-      </tr>
-      %for (vrsta, cena) in ponudba:
-        <tr>
-          <td>{{vrsta}}</td>
-          <td>{{cena}}</td>
-        </tr>
-      %end
-      </table>
-    </th>
+    <th>Hrana</th>
+    <th>Cena</th>
   </tr>
-  <tr>
-    <td>
-      <br>
-        <form action="{{url('prijava')}}" method="POST">
-          <p>Uporabniško ime: <input class="input is-success" type="text" name="uporabnisko_ime" value="{{uporabnisko_ime}}"></p>
-          <p>Geslo: <input class="input is-success" type="text" name="geslo1" value="{{geslo1}}"></p>
-          <br>
-            <p><input  class="input is-danger is-rounded is-light" type="submit" value="Prijavi se"></p>
-        </form>      
-    </td>
-    <td align="center">
-      <br>
-      <p>
-        <a href="{{url('registracija', x=1000)}}" class="button is-danger is-rounded is-light">Registracija</a>
-      </p>
-    </td> 
-  </tr>
+  %for (vrsta, cena) in ponudba:
+  <!-- cena = "{0} €".format(cena) -->
+    <tr>
+      <td>{{vrsta}}</td>
+      <td>{{"{0} €".format(cena)}}</td>
+    </tr>
+  %end
   </table>
- <br> 
-<p>
-  <a href="{{url('dodaj_ponudbo', x=1000)}}" class="button is-danger is-rounded is-light">Dodaj v ponudbo</a>
- 
-  
-
-  <a href="{{url('povecaj_zalogo', x=1000)}}" class="button is-danger is-rounded is-light">Povečaj zalogo</a>
-
-
-  <a href="{{url('oddaj_narocilo', x=1000)}}" class="button is-danger is-rounded is-light">Oddaj naročilo</a>
-
-
-  <a href="{{url('spremeni_placo', x=1000)}}" class="button is-danger is-rounded is-light">Spremeni plačo</a>
-</p>
-
