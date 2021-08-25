@@ -3,6 +3,7 @@
 %if napaka:
   <p class="opozorilo">{{napaka}}</p>
 %end
+  <br>
 
   <form action="{{url('povecaj_zalogo')}}" method="POST">
     <p> <label for="vrsta_zaloge">Povečaj zaloga za:</label>
@@ -16,7 +17,7 @@
     <br>
     <p>Povečaj zalogo za: <input class="input is-success" style="height:30px; width:200px" type="number" name="kolicina_nove_zaloge" min="1" value="{{kolicina_nove_zaloge}}"></p>
     <br>
-        <p><input type="submit" class="input is-danger is-rounded is-light" style="width:200px" value="Povečaj"></p>
+        <p><input type="submit" class="btn btn-primary" style="width:200px" value="Povečaj"></p>
   </form>
 
 

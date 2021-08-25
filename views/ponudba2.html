@@ -5,11 +5,12 @@
 %end
 
   <form action="{{url('dodaj_ponudbo')}}" method="POST">
+    <br>
     <p>Vrsta: <input class="input is-success" style="height:30px; width:200px" type="text" name="vrsta" value="{{vrsta}}"></p>
     <br>
     <p>Cena: <input class="input is-success" style="height:30px; width:200px" type="number" min="0" step="0.01" name="cena" value="{{cena}}"></p>
     <br>
     <p>Zaloga: <input class="input is-success" style="height:30px; width:200px" type="number" min="1" name="zaloga" value="{{zaloga}}"></p>
     <br>
-      <p><input class="input is-danger is-rounded is-light" style="width:200px" type="submit" value="Dodaj v ponudbo"></p>
+      <p><input class="btn btn-primary" style="width:200px" type="submit" value="Dodaj v ponudbo"></p>
   </form>

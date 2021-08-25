@@ -5,6 +5,7 @@
 %end
 
   <form action="{{url('dodaj_zaposlenega_post')}}" method="POST">
+    <br>
     <p>Ime: <input  class="input is-success" style="height:30px; width:200px" type="text" name="ime" value="{{ime}}"></p>
     <br>
     <p>Priimek: <input  class="input is-success" style="height:30px; width:200px" type="text" name="priimek" value="{{priimek}}"></p>
@@ -21,5 +22,5 @@
     <br>
     <p>Ponovite geslo: <input  class="input is-success" style="height:30px; width:200px" type="text" name="geslo2" value="{{geslo2}}"></p>
     <br>
-      <p><input type="submit"  class="input is-danger is-rounded is-light" style="width:200px" value="Dodaj novega zaposlenega"></p>
+      <p><input type="submit"  class="btn btn-primary" style="width:300px" value="Dodaj novega zaposlenega"></p>
   </form>
