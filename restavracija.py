@@ -74,7 +74,7 @@ def prijava():
     if uporabnik == '' or geslo == '':
         #print('podatki manjkajo')
         nastaviSporocilo('Uporabniško ima in geslo morata biti neprazna') 
-        redirect('/')
+        redirect(url('/'))
         return
     hashBaza_zaposlen = None
     hashBaza_narocnik = None
@@ -95,19 +95,19 @@ def prijava():
     if hashBaza_narocnik is None and hashBaza_zaposlen is None:
         #print('ne obstaja niti narocnik, niti zaposlen')
         nastaviSporocilo('Uporabniško ime ali geslo ni ustrezno') 
-        redirect('/')
+        redirect(url('/'))
         return
     if hashBaza_zaposlen is None:
         #print('zaposlen is None')
         if password_hash(geslo) != hashBaza_narocnik:
             print('geslo narocnik se ne ujema')
             nastaviSporocilo('Uporabniško ime ali geslo ni ustrezno') 
-            redirect('/')
+            redirect(url('/'))
             return
         #print('narocnika smo uspesno prijavili')
         response.set_cookie('uporabnik', uporabnik, secret=skrivnost)
         nastaviSporocilo("{0} pozdravljen! Preglej našo današnjo ponudbo in če želiš, oddaj naročilo.".format(uporabnik))
-        redirect('/ponudba')
+        redirect(url('/ponudba'))
     #if hashBaza_narocnik is not None:
     #        nastaviSporocilo('Uporabniško geslo ali ime nista ustrezni') 
     #        redirect('/')
@@ -115,7 +115,7 @@ def prijava():
     if password_hash(geslo) != hashBaza_zaposlen:
         #print('geslo zaposlen se ne ujema')
         nastaviSporocilo('Uporabniško ime ali geslo ni ustrezno') 
-        redirect('/')
+        redirect(url('/'))
         return
     response.set_cookie('uporabnik', uporabnik, secret=skrivnost)
     #print('zaposlenega smo uspešno prijavili')
@@ -126,7 +126,7 @@ def prijava():
 def odjava():
     response.delete_cookie('uporabnik')
     nastaviSporocilo('Odjava uspešna. Lep pozdrav in nasvidenje.')
-    redirect('/')
+    redirect(url('/'))
 
 
 @get('/ponudba')
@@ -165,7 +165,7 @@ def narocilo():
     #response.set_cookie('kolicina', kolicina, secret=skrivnost)
     #return template('povzetek_narocila.html',vrsta=vrsta, kolicina=kolicina, cena_narocila=cena_narocila, napaka=napaka)
     nastaviSporocilo("{uporabnik}, vaše naročilo je bilo uspešno oddano. Skupna cena naročila znaša {cena_narocila} €".format(uporabnik=uporabnik, cena_narocila=cena_narocila))
-    redirect('/ponudba')
+    redirect(url('/ponudba'))
 
 #@post('/ponudba')
 #def narocilo():
@@ -266,7 +266,7 @@ def oddaj_narocilo():
         conn.rollback()
         return template('oddaj_narocilo.html', uporabnisko_ime='',vrsta='',kolicina='',
         napaka='Zgodila se je napaka: %s' % ex)
-    redirect(url('indeks'))
+    redirect(url('/'))
 
 
 def password_hash(s):
