@@ -120,7 +120,7 @@ def prijava():
     response.set_cookie('uporabnik', uporabnik, secret=skrivnost)
     #print('zaposlenega smo uspešno prijavili')
     nastaviSporocilo("{0} pozdravljen!".format(uporabnik))
-    redirect('/vodenje_restavracija')
+    redirect(url('/vodenje_restavracija'))
 
 @get('/odjava')
 def odjava():
