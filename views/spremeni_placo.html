@@ -6,9 +6,14 @@
 
   <form action="{{url('spremeni_placo')}}" method="POST">
     <br>
-    <p>Id zaposlenega: <input  class="input is-success" style="height:30px; width:200px"  type="text" name="id" value="{{id}}"></p>
-    <br>
-    <p>Spremeni plačo za: <input  class="input is-success" style="height:30px; width:200px"  type="number" name="spremeni_placo" value="{{spremeni_placo}}"></p>
+    <p> <label for="zaposleni">Priimek:</label>
+      <select name="zaposleni" style="width:auto; display:inline-block;"  >
+          %for priimek in zaposleni:
+              <option value="{{priimek[0]}}">{{priimek[0]}}</option> 
+          %end
+      </select>
+    </p>
+    <p>Spremeni plačo za: <input  class="input is-success" style="height:30px; width:200px"  type="number" min="-20" step="0.01" name="spremeni_placo" value="{{spremeni_placo}}"></p>
     <br>
         <p><input class="btn btn-primary" style="width:200px" type="submit" value="Spremeni"></p>
   </form>
